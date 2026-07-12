@@ -1,0 +1,11 @@
+{
+  "name": "@inkora/brand",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Single source of truth for inkora brand identity (name, tagline, colors, contact). Edit this package to rebrand.",
+  "main": "./index.ts",
+  "types": "./index.ts",
+  "exports": {
+    ".": "./index.ts"
+  }
+}

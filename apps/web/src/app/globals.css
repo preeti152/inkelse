@@ -1,0 +1,193 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─────────────────────────────────────────────────────────────
+ * Design tokens — single source of truth for runtime CSS values.
+ * Mirrors the @inkora/brand exports + Tailwind config.
+ * ───────────────────────────────────────────────────────────── */
+
+@layer base {
+  :root {
+    /* CMYK ink palette (the brand) */
+    --c-cyan:    #0AAEEC;
+    --c-magenta: #E91E63;
+    --c-yellow:  #FFD600;
+    --c-black:   #1A1A1A;
+
+    /* Paper surfaces */
+    --c-paper:   #FFFFFF;
+    --c-cream:   #F7F4EE;
+    --c-grey:    #F0F0F0;
+
+    /* Type */
+    --font-inter:    'Inter', system-ui, -apple-system, sans-serif;
+    --font-fraunces: 'Fraunces', Georgia, serif;
+
+    /* Motion */
+    --ease-standard:    cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-emphasized:  cubic-bezier(0.2, 0, 0, 1);
+    --ease-bounce:      cubic-bezier(0.34, 1.56, 0.64, 1);
+    --duration-fast:    150ms;
+    --duration-base:    300ms;
+    --duration-slow:    800ms;
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    scroll-behavior: smooth;
+    /* Ensure scroll-snap works only if we opt into it per section */
+  }
+
+  body {
+    background-color: var(--c-paper);
+    color: var(--c-black);
+    font-family: var(--font-inter);
+    font-feature-settings: 'cv11', 'ss01', 'ss03', 'cv02';
+    overflow-x: hidden;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--c-cyan);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  ::selection {
+    background-color: var(--c-cyan);
+    color: var(--c-paper);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+ * Reusable component classes (brochure-style)
+ * ───────────────────────────────────────────────────────────── */
+
+@layer components {
+  /* Tracked uppercase eyebrow */
+  .eyebrow {
+    @apply text-xs uppercase tracking-tracked-wide text-quiet font-semibold;
+  }
+
+  /* Editorial container */
+  .container-editorial {
+    @apply mx-auto max-w-editorial px-6 md:px-8;
+  }
+
+  /* Premium pill button (matches brochure "REQUEST A QUOTE" + "LETS CONNECT") */
+  .btn-pill {
+    @apply inline-flex items-center justify-center gap-2.5 rounded-pill px-6 py-3 text-sm font-medium
+           transition-all duration-200 ease-standard
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan focus-visible:ring-offset-2
+           disabled:pointer-events-none disabled:opacity-50;
+  }
+  .btn-pill::after {
+    content: '';
+    @apply ml-1 inline-block h-1.5 w-1.5 rounded-full bg-current opacity-80;
+  }
+
+  .btn-pill-dark { @apply btn-pill bg-ink text-paper hover:bg-ink-800; }
+  .btn-pill-cyan { @apply btn-pill bg-cyan text-paper hover:bg-cyan-600; }
+  .btn-pill-ghost { @apply btn-pill bg-transparent text-ink ring-1 ring-ink/20 hover:bg-ink hover:text-paper hover:ring-ink; }
+
+  /* Big square category card (like the brochure 3×3 grid) */
+  .product-card {
+    @apply relative overflow-hidden rounded-xl bg-paper-grey transition-all duration-300 ease-standard
+           hover:shadow-2xl hover:-translate-y-1;
+  }
+
+  /* CMYK chip — small color identifier */
+  .cmyk-chip {
+    @apply inline-flex items-center justify-center h-4 w-4 rounded-full;
+  }
+
+  /* Halftone texture (matches brochure hero background) */
+  .bg-halftone {
+    background-image:
+      radial-gradient(circle at center, rgba(0, 0, 0, 0.06) 1.2px, transparent 1.6px);
+    background-size: 16px 16px;
+    background-position: 0 0;
+  }
+  .bg-halftone-diagonal {
+    background-image:
+      repeating-linear-gradient(135deg, rgba(0,0,0,0.03) 0 1px, transparent 1px 18px),
+      radial-gradient(circle at center, rgba(0, 0, 0, 0.05) 1.1px, transparent 1.5px);
+    background-size: auto, 18px 18px;
+  }
+
+  /* CMYK 4-stripe footer band */
+  .cmyk-bar {
+    background: var(--cmyk-stripe, linear-gradient(90deg,
+      #0AAEEC 0 25%, #E91E63 25% 50%, #FFD600 50% 75%, #1A1A1A 75% 100%
+    ));
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+ * Utilities — component-local additions
+ * ───────────────────────────────────────────────────────────── */
+
+@layer utilities {
+  .text-balance { text-wrap: balance; }
+  .text-pretty  { text-wrap: pretty; }
+
+  /* Stagger children fade-in */
+  .stagger > * {
+    opacity: 0;
+    animation: fadeInUpKeyframes 700ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+  .stagger > *:nth-child(1) { animation-delay: 0ms; }
+  .stagger > *:nth-child(2) { animation-delay: 90ms; }
+  .stagger > *:nth-child(3) { animation-delay: 180ms; }
+  .stagger > *:nth-child(4) { animation-delay: 270ms; }
+  .stagger > *:nth-child(5) { animation-delay: 360ms; }
+  .stagger > *:nth-child(6) { animation-delay: 450ms; }
+  .stagger > *:nth-child(7) { animation-delay: 540ms; }
+  .stagger > *:nth-child(8) { animation-delay: 630ms; }
+  .stagger > *:nth-child(9) { animation-delay: 720ms; }
+
+  @keyframes fadeInUpKeyframes {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Marquee track — children must total 200% width */
+  .marquee-track {
+    display: flex;
+    flex-wrap: nowrap;
+    width: max-content;
+    animation: marqueeKeyframes 28s linear infinite;
+  }
+  @keyframes marqueeKeyframes {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+
+  /* "Drop" cascade between sections — used as wrappers */
+  .section-drop {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 calc(100% - 60px));
+  }
+  .section-drop-up {
+    clip-path: polygon(0 60px, 100% 0, 100% 100%, 0 100%);
+  }
+
+  /* 3D tilt on hover */
+  .tilt-3d {
+    transform-style: preserve-3d;
+    transition: transform 400ms cubic-bezier(0.2, 0, 0, 1);
+  }
+  .tilt-3d:hover {
+    transform: rotateY(-6deg) rotateX(4deg) translateZ(20px);
+  }
+}
