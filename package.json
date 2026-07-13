@@ -4,7 +4,7 @@
   "private": true,
   "description": "inkora — Print. Gift. Belong. The craft house for modern offices.",
   "engines": {
-    "node": ">=20.0.0"
+    "node": "22.x"
   },
   "packageManager": "pnpm@10.4.1",
   "scripts": {
