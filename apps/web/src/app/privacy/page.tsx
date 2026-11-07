@@ -18,7 +18,7 @@ export default function PrivacyPage() {
       <Header />
       <main id="main" className="bg-paper">
         {/* Hero */}
-        <div className="relative overflow-hidden bg-ink pt-32 pb-20 text-paper">
+        <div className="page-hero relative overflow-hidden pt-36 pb-24 text-paper md:pt-40 md:pb-28">
           <div className="absolute inset-0 bg-halftone opacity-10" />
           <div
             className="absolute inset-0"

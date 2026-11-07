@@ -7,6 +7,7 @@ import { Header } from '@/components/layout/Header';
 import { FooterCMYK } from '@/components/layout/FooterCMYK';
 import { WhatsAppBubble } from '@/components/chat/WhatsAppBubble';
 import { Container } from '@/components/layout/Container';
+import { ServiceIcon } from '@/components/brand/ServiceIcon';
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -46,7 +47,9 @@ export default async function ServicePage({ params }: PageProps) {
               <ArrowLeft className="h-4 w-4" strokeWidth={2} />
               All services
             </Link>
-            <div className="text-6xl" aria-hidden>{service.emoji}</div>
+            <span className="glass-dark flex h-20 w-20 items-center justify-center rounded-3xl text-white">
+              <ServiceIcon name={service.icon} className="h-9 w-9" />
+            </span>
             <h1 className="mt-4 font-display text-display-xl uppercase tracking-tightest text-white">{service.name}</h1>
             <p className="mt-4 max-w-2xl text-lg text-white/90">{service.description}</p>
           </Container>
@@ -100,7 +103,7 @@ export default async function ServicePage({ params }: PageProps) {
           <Link href={`/services/${next.slug}`} className="group flex items-center justify-between rounded-2xl border border-edge p-8 transition-colors hover:border-ink">
             <div>
               <p className="text-xs uppercase tracking-tracked text-quiet">Next service</p>
-              <p className="mt-1 font-display text-2xl font-bold uppercase tracking-tightest text-ink">{next.emoji} {next.name}</p>
+              <p className="mt-1 font-display text-2xl font-bold uppercase tracking-tightest text-ink">{next.name}</p>
             </div>
             <ArrowRight className="h-6 w-6 text-ink transition-transform duration-200 group-hover:translate-x-1" strokeWidth={2} />
           </Link>

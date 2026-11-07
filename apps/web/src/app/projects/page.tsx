@@ -18,7 +18,7 @@ export default function ProjectsPage() {
       <Header />
       <main id="main" className="bg-paper">
         {/* Hero */}
-        <div className="bg-ink pt-32 pb-20 text-paper">
+        <div className="page-hero relative overflow-hidden pt-36 pb-24 text-paper md:pt-40 md:pb-28">
           <Container>
             <p className="eyebrow mb-3 text-cyan">Our work</p>
             <h1 className="font-display text-display-xl uppercase tracking-tightest">Projects</h1>

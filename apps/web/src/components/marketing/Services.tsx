@@ -5,6 +5,9 @@ import { motion } from 'framer-motion';
 import { Printer, Gift, PanelsTopLeft, Package, Palette, Tent, ArrowUpRight } from 'lucide-react';
 import { SERVICES } from '@inkora/brand';
 import { Container } from '@/components/layout/Container';
+import { SectionHeading, StaggerGroup, itemVariants } from '@/components/motion/Reveal';
+import { SpotlightCard } from '@/components/motion/SpotlightCard';
+import { cn } from '@/lib/cn';
 import { SectionDrop } from './SectionDrop';
 
 const ICON_MAP: Record<string, typeof Printer> = {
@@ -16,71 +19,95 @@ const ICON_MAP: Record<string, typeof Printer> = {
   tent: Tent,
 };
 
+/** Accent → translucent glow colour for the spotlight. */
+const glow = (hex: string) => `${hex}2E`;
+/** Yellow fails contrast as an icon colour on light glass — darken it. */
+const iconInk = (hex: string) => (hex.toUpperCase() === '#FFD600' ? '#B38F00' : hex);
+
 /**
- * Section 3 — Services (6 clean cards)
+ * Section 3 — Services as a bento grid.
+ * Lead service gets a 2×2 tile; the rest are glass cards with a pointer
+ * spotlight and an animated CMYK gradient border on hover.
  */
 export function Services() {
   return (
-    <SectionDrop bgKey="services" bg="#F7F4EE" bgFrom="#FFFFFF" tone="dark">
+    <SectionDrop bgKey="services" bg="#F4F1EA" bgFrom="#FAFAF7" tone="dark" surface="mesh-light">
       <Container className="py-24 md:py-32">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-80px' }}
-          transition={{ duration: 0.7 }}
-          className="max-w-2xl"
-        >
-          <p className="eyebrow mb-3">What we do</p>
-          <h2 className="font-display text-display-lg uppercase tracking-tightest text-ink text-balance">
-            One partner. <span className="text-magenta">Every branding need.</span>
-          </h2>
-        </motion.div>
+        <div className="flex flex-wrap items-end justify-between gap-6">
+          <SectionHeading
+            eyebrow="What we do"
+            title={
+              <>
+                One partner. <span className="text-gradient-ink">Every branding need.</span>
+              </>
+            }
+          />
+          <Link
+            href="/services"
+            className="group inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-ink/70 transition-colors hover:text-ink"
+          >
+            All services
+            <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" strokeWidth={2} />
+          </Link>
+        </div>
 
-        <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <StaggerGroup className="mt-14 grid auto-rows-[minmax(15rem,auto)] gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {SERVICES.map((service, i) => {
             const Icon = ICON_MAP[service.icon] ?? Printer;
+            const lead = i === 0;
             return (
               <motion.div
                 key={service.id}
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-50px' }}
-                transition={{ duration: 0.6, delay: (i % 3) * 0.08 + Math.floor(i / 3) * 0.1 }}
-                className="group relative overflow-hidden rounded-2xl bg-paper shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl"
+                variants={itemVariants}
+                className={cn(lead && 'sm:col-span-2 lg:row-span-2')}
               >
-                <Link href={`/services/${service.slug}`} className="block p-8">
-                {/* Accent blob */}
-                <div
-                  className="absolute -right-8 -top-8 h-24 w-24 rounded-full opacity-10 transition-all duration-500 group-hover:scale-[6] group-hover:opacity-100"
-                  style={{ backgroundColor: service.accent }}
-                />
-
-                <div className="relative z-10">
-                  <div
-                    className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl transition-colors duration-500 group-hover:bg-white/20"
-                    style={{ backgroundColor: `${service.accent}18`, color: service.accent }}
+                <SpotlightCard
+                  color={glow(service.accent)}
+                  className="border-gradient glass group h-full rounded-[1.75rem] transition-transform duration-500 ease-emphasized hover:-translate-y-1.5"
+                >
+                  <Link
+                    href={`/services/${service.slug}`}
+                    className={cn('relative z-10 flex h-full flex-col p-7 md:p-8', lead && 'lg:p-10')}
                   >
-                    <Icon className="h-6 w-6 transition-colors duration-500 group-hover:text-white" strokeWidth={1.75} />
-                  </div>
+                    {/* Oversized watermark icon on the lead tile */}
+                    {lead && (
+                      <Icon
+                        aria-hidden="true"
+                        className="pointer-events-none absolute -bottom-10 -right-10 h-72 w-72 opacity-[0.06] transition-transform duration-700 ease-emphasized group-hover:-rotate-6 group-hover:scale-105"
+                        style={{ color: service.accent }}
+                        strokeWidth={1}
+                      />
+                    )}
 
-                  <h3 className="flex items-center gap-2 text-xl font-bold text-ink transition-colors duration-500 group-hover:text-white">
-                    <span className="text-2xl" aria-hidden>{service.emoji}</span>
-                    {service.name}
-                  </h3>
-                  <p className="mt-3 text-sm leading-relaxed text-quiet transition-colors duration-500 group-hover:text-white/90">
-                    {service.description}
-                  </p>
+                    <span
+                      className="flex h-14 w-14 items-center justify-center rounded-2xl ring-1 ring-inset ring-black/5 transition-transform duration-500 ease-bounce group-hover:scale-110 group-hover:-rotate-3"
+                      style={{
+                        background: `linear-gradient(135deg, ${service.accent}26, ${service.accent}0D)`,
+                        color: iconInk(service.accent),
+                      }}
+                    >
+                      <Icon className="h-6 w-6" strokeWidth={1.75} />
+                    </span>
 
-                  <div className="mt-6 flex items-center gap-1 text-sm font-semibold text-ink opacity-0 transition-all duration-500 group-hover:text-white group-hover:opacity-100">
-                    <span>Learn more</span>
-                    <ArrowUpRight className="h-4 w-4" strokeWidth={2} />
-                  </div>
-                </div>
-                </Link>
+                    <h3 className={cn('mt-6 font-bold tracking-tight text-ink', lead ? 'text-3xl md:text-4xl' : 'text-xl')}>
+                      {service.name}
+                    </h3>
+                    <p className={cn('mt-3 leading-relaxed text-ink/65', lead ? 'max-w-md text-base md:text-lg' : 'text-sm')}>
+                      {lead ? service.intro : service.description}
+                    </p>
+
+                    <span className="mt-auto flex items-center gap-1.5 pt-8 text-sm font-semibold text-ink">
+                      Learn more
+                      <span className="flex h-7 w-7 items-center justify-center rounded-full bg-ink text-paper transition-transform duration-300 group-hover:translate-x-1">
+                        <ArrowUpRight className="h-3.5 w-3.5" strokeWidth={2.25} />
+                      </span>
+                    </span>
+                  </Link>
+                </SpotlightCard>
               </motion.div>
             );
           })}
-        </div>
+        </StaggerGroup>
       </Container>
     </SectionDrop>
   );

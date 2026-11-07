@@ -1,31 +1,34 @@
-'use client';
-
 import { cn } from '@/lib/cn';
 
 /**
- * SectionDrop — a solid, reliable section wrapper.
+ * SectionDrop — section wrapper with a "stacked sheets" transition.
  *
- * Each section has its own solid background color. The "color changes as you
- * scroll" effect comes naturally from stacking sections of alternating colors
- * (white → cream → black → white …) plus a soft diagonal "cascade" edge at the
- * top of each section so one color visually flows into the next.
+ * Each section is a rounded sheet that slides up over the previous one
+ * (negative top margin + large top radius + soft shadow), so colour changes
+ * read like layered paper stock rather than hard horizontal cuts.
+ * Pure CSS — no scroll listeners, no layout jank.
  *
- * NOTE: The previous version used a scroll-driven sliding overlay which caused
- * flashing / broken color rendering. This version is deterministic and stable.
+ * `surface` adds an optional background treatment on top of `bg`:
+ *  - `solid`      plain colour (default)
+ *  - `mesh-light` soft CMYK gradient mesh for light sections
+ *  - `mesh-dark`  deep CMYK mesh + fine grid + grain for dark sections
+ *  - `aurora`     mesh-dark plus slowly drifting colour blobs
  */
 interface SectionDropProps {
   children: React.ReactNode;
   id?: string;
   bgKey: string;
-  /** Final background color of this section. */
+  /** Base background colour of this section. */
   bg: string;
-  /** Previous section's color — used for the cascade edge at the top. */
+  /** Previous section's colour. When set (and cascade=true) the sheet overlaps it. */
   bgFrom?: string;
+  /** `light` = light text (dark section). `dark` = dark text (light section). */
   tone?: 'light' | 'dark';
   minHeight?: string;
   className?: string;
-  /** Show the diagonal cascade edge at the top (default true). */
+  /** Overlap the previous section with a rounded sheet edge (default true). */
   cascade?: boolean;
+  surface?: 'solid' | 'mesh-light' | 'mesh-dark' | 'aurora';
 }
 
 export function SectionDrop({
@@ -38,28 +41,55 @@ export function SectionDrop({
   minHeight = 'auto',
   className,
   cascade = true,
+  surface = 'solid',
 }: SectionDropProps) {
+  const sheet = cascade && !!bgFrom;
+  const darkSurface = surface === 'mesh-dark' || surface === 'aurora';
+
   return (
     <section
       id={id}
       data-bg={bgKey}
       className={cn(
-        'relative w-full',
+        'relative w-full overflow-hidden supports-[overflow:clip]:overflow-clip',
         tone === 'light' ? 'text-paper' : 'text-ink',
+        sheet &&
+          '-mt-10 rounded-t-[2.5rem] shadow-[0_-24px_60px_-30px_rgba(0,0,0,0.35)] md:-mt-14 md:rounded-t-[3.5rem]',
+        surface === 'mesh-light' && 'bg-mesh-light',
+        darkSurface && 'bg-mesh-dark bg-grain',
         className,
       )}
       style={{ backgroundColor: bg, minHeight }}
     >
-      {/* Cascade edge — a thin band of the previous color that angles into this
-          section, creating a smooth "color drop" without any JS/scroll jank. */}
-      {cascade && bgFrom && (
+      {darkSurface && (
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0">
+          <div className="bg-grid-fade absolute inset-0" />
+          {surface === 'aurora' && (
+            <>
+              <div className="aurora-blob -left-24 top-0 h-[28rem] w-[28rem] bg-cyan/40" />
+              <div
+                className="aurora-blob -right-24 top-1/3 h-[26rem] w-[26rem] bg-magenta/35"
+                style={{ animationDelay: '-6s' }}
+              />
+              <div
+                className="aurora-blob bottom-0 left-1/3 h-[22rem] w-[22rem] bg-yellow/20"
+                style={{ animationDelay: '-12s' }}
+              />
+            </>
+          )}
+        </div>
+      )}
+
+      {/* Hairline highlight along the sheet's top edge */}
+      {sheet && (
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 top-0 h-16 md:h-24"
-          style={{
-            backgroundColor: bgFrom,
-            clipPath: 'polygon(0 0, 100% 0, 100% 0, 0 100%)',
-          }}
+          className={cn(
+            'pointer-events-none absolute inset-x-0 top-0 h-px',
+            tone === 'light'
+              ? 'bg-gradient-to-r from-transparent via-white/20 to-transparent'
+              : 'bg-gradient-to-r from-transparent via-white to-transparent',
+          )}
         />
       )}
 

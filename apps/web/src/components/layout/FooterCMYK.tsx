@@ -2,15 +2,22 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Facebook, Instagram, Youtube, Twitter, ArrowRight } from 'lucide-react';
-import { BRAND, CONTACT, SOCIAL } from '@inkora/brand';
+import { Facebook, Instagram, Youtube, Twitter, ArrowRight, Check, Mail, Phone, MessageCircle } from 'lucide-react';
+import { BRAND, CONTACT, SOCIAL, getWhatsAppUrl } from '@inkora/brand';
 import { Container } from '@/components/layout/Container';
 import { Logo } from '@/components/brand/Logo';
 
+const EXPLORE = [
+  { href: '/services', label: 'Services' },
+  { href: '/projects', label: 'Projects' },
+  { href: '/about', label: 'About' },
+  { href: '/contact', label: 'Contact' },
+];
+
 /**
- * FooterCMYK — Black footer with the signature CMYK stripe at the top,
- * a cyan newsletter subscribe pill, sales-office address, social icons,
- * and a legal strip. Matches the brochure's footer exactly.
+ * Footer — dark CMYK mesh sheet that overlaps the section above, with a glass
+ * newsletter card, link columns, an oversized gradient wordmark and the
+ * signature CMYK hairline.
  */
 export function FooterCMYK() {
   const [email, setEmail] = useState('');
@@ -23,68 +30,90 @@ export function FooterCMYK() {
   };
 
   return (
-    <footer className="relative bg-ink text-paper">
-      {/* CMYK stripe at the very top */}
-      <div className="cmyk-bar h-2.5" aria-hidden="true" />
+    <footer className="bg-mesh-dark bg-grain relative -mt-10 overflow-hidden rounded-t-[2.5rem] text-paper md:-mt-14 md:rounded-t-[3.5rem]">
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0">
+        <div className="bg-grid-fade absolute inset-0 opacity-60" />
+        <div className="aurora-blob -left-24 bottom-0 h-96 w-96 bg-cyan/30" />
+        <div className="aurora-blob -right-24 top-0 h-96 w-96 bg-magenta/25" style={{ animationDelay: '-9s' }} />
+      </div>
 
-      <Container className="py-16">
-        {/* Newsletter subscribe pill */}
+      {/* CMYK hairline along the sheet edge */}
+      <div className="cmyk-bar absolute inset-x-10 top-0 h-[3px] rounded-b-full md:inset-x-20" aria-hidden="true" />
+
+      <Container className="relative z-10 pb-10 pt-20 md:pt-24">
+        {/* Newsletter */}
         <form
           onSubmit={handleSubscribe}
-          className="mx-auto flex max-w-3xl flex-col items-center gap-4 rounded-3xl bg-cyan p-6 shadow-2xl md:flex-row md:gap-6 md:rounded-pill md:p-2.5 md:pl-8"
+          className="glass-dark mx-auto flex max-w-4xl flex-col gap-5 rounded-[2rem] p-6 md:flex-row md:items-center md:gap-8 md:p-4 md:pl-8"
         >
-          <div className="text-center md:flex-1 md:text-left">
-            <p className="text-lg font-bold text-paper md:text-xl">Subscribe to our newsletter</p>
-            <p className="text-xs text-paper/80">Helpful articles about printing best practices</p>
+          <div className="md:flex-1">
+            <p className="text-lg font-bold tracking-tight md:text-xl">Subscribe to our newsletter</p>
+            <p className="mt-0.5 text-sm text-paper/60">Helpful articles about printing best practices.</p>
           </div>
 
           {subscribed ? (
-            <span className="rounded-pill bg-paper px-6 py-3 text-sm font-semibold text-ink">
-              You&apos;re in 🎉
+            <span role="status" className="inline-flex items-center gap-2 rounded-pill bg-white px-6 py-3 text-sm font-semibold text-ink">
+              <Check className="h-4 w-4 text-[#16A34A]" strokeWidth={2.5} />
+              You&apos;re in — thanks!
             </span>
           ) : (
-            <div className="flex w-full items-center gap-2 md:w-auto md:gap-4">
+            <div className="flex w-full items-center gap-2 rounded-pill border border-white/10 bg-white/5 p-1.5 md:w-auto">
+              <label htmlFor="footer-email" className="sr-only">
+                Email address
+              </label>
               <input
+                id="footer-email"
                 type="email"
                 required
+                autoComplete="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Email"
-                className="w-full flex-1 rounded-pill border-0 bg-paper/20 px-5 py-3 text-paper placeholder:text-paper/70 focus:bg-paper focus:text-ink focus:outline-none focus:placeholder:text-quiet md:w-72"
+                placeholder="you@company.com"
+                className="min-w-0 flex-1 bg-transparent px-4 py-2.5 text-paper placeholder:text-paper/40 focus:outline-none md:w-64"
               />
-              <button
-                type="submit"
-                aria-label="Subscribe"
-                className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-paper text-ink transition-transform hover:scale-105"
-              >
-                <ArrowRight className="h-5 w-5" strokeWidth={2} />
+              <button type="submit" className="btn-pill-gradient btn-shine shrink-0 !px-5 !py-2.5">
+                <span className="shine" aria-hidden="true" />
+                Subscribe
               </button>
             </div>
           )}
         </form>
 
-        {/* Brand + meta */}
-        <div className="mt-14 grid gap-10 md:grid-cols-4">
-          <div>
-            <Link href="/" className="inline-block text-paper">
+        {/* Columns */}
+        <div className="mt-16 grid gap-10 sm:grid-cols-2 lg:grid-cols-12">
+          <div className="lg:col-span-4">
+            <Link href="/" className="inline-block text-paper" aria-label={`${BRAND.nameDisplay} home`}>
               <Logo variant="primary" />
             </Link>
-            <p className="mt-4 text-sm text-paper/70">{BRAND.tagline}</p>
+            <p className="mt-4 max-w-xs text-sm leading-relaxed text-paper/60">{BRAND.longDescription}</p>
+            <div className="mt-6 flex items-center gap-2">
+              {SOCIAL.facebook && <SocialLink href={SOCIAL.facebook} icon={Facebook} label="Facebook" />}
+              {SOCIAL.instagram && <SocialLink href={SOCIAL.instagram} icon={Instagram} label="Instagram" />}
+              {SOCIAL.youtube && <SocialLink href={SOCIAL.youtube} icon={Youtube} label="YouTube" />}
+              {SOCIAL.twitter && <SocialLink href={SOCIAL.twitter} icon={Twitter} label="Twitter" />}
+            </div>
           </div>
 
-          <div className="text-sm text-paper/80">
-            <p className="font-bold text-paper">Explore</p>
-            <ul className="mt-3 space-y-2">
-              <li><Link href="/services" className="text-paper/70 hover:text-paper">Services</Link></li>
-              <li><Link href="/projects" className="text-paper/70 hover:text-paper">Projects</Link></li>
-              <li><Link href="/about" className="text-paper/70 hover:text-paper">About</Link></li>
-              <li><Link href="/contact" className="text-paper/70 hover:text-paper">Contact</Link></li>
+          <nav aria-label="Footer" className="lg:col-span-2">
+            <p className="text-xs font-semibold uppercase tracking-tracked text-paper/45">Explore</p>
+            <ul className="mt-4 space-y-1">
+              {EXPLORE.map((l) => (
+                <li key={l.href}>
+                  <Link
+                    href={l.href}
+                    className="group inline-flex min-h-9 items-center gap-1 text-sm text-paper/75 transition-colors hover:text-white"
+                  >
+                    {l.label}
+                    <ArrowRight className="h-3.5 w-3.5 -translate-x-1 opacity-0 transition-all group-hover:translate-x-0 group-hover:opacity-100" strokeWidth={2} />
+                  </Link>
+                </li>
+              ))}
             </ul>
-          </div>
+          </nav>
 
-          <div className="text-sm text-paper/80">
-            <p className="font-bold text-paper">Sales office</p>
-            <p className="mt-2 leading-relaxed">
+          <div className="lg:col-span-3">
+            <p className="text-xs font-semibold uppercase tracking-tracked text-paper/45">Sales office</p>
+            <p className="mt-4 text-sm leading-relaxed text-paper/75">
               {CONTACT.address.line1}
               <br />
               {CONTACT.address.line2}
@@ -93,37 +122,57 @@ export function FooterCMYK() {
             </p>
           </div>
 
-          <div>
-            <p className="font-bold text-paper">Follow us</p>
-            <div className="mt-3 flex items-center gap-3">
-              {SOCIAL.facebook && (
-                <SocialLink href={SOCIAL.facebook} icon={Facebook} label="Facebook" />
-              )}
-              {SOCIAL.instagram && (
-                <SocialLink href={SOCIAL.instagram} icon={Instagram} label="Instagram" />
-              )}
-              {SOCIAL.youtube && (
-                <SocialLink href={SOCIAL.youtube} icon={Youtube} label="YouTube" />
-              )}
-              {SOCIAL.twitter && (
-                <SocialLink href={SOCIAL.twitter} icon={Twitter} label="Twitter" />
-              )}
-            </div>
+          <div className="lg:col-span-3">
+            <p className="text-xs font-semibold uppercase tracking-tracked text-paper/45">Talk to us</p>
+            <ul className="mt-4 space-y-1 text-sm">
+              <li>
+                <a href={getWhatsAppUrl()} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-9 items-center gap-2 text-paper/75 transition-colors hover:text-white">
+                  <MessageCircle className="h-4 w-4 text-[#25D366]" strokeWidth={1.75} />
+                  WhatsApp
+                </a>
+              </li>
+              <li>
+                <a href={`tel:${CONTACT.phoneHref}`} className="inline-flex min-h-9 items-center gap-2 text-paper/75 transition-colors hover:text-white">
+                  <Phone className="h-4 w-4 text-magenta-300" strokeWidth={1.75} />
+                  {CONTACT.phone}
+                </a>
+              </li>
+              <li>
+                <a href={`mailto:${CONTACT.email}`} className="inline-flex min-h-9 max-w-full items-center gap-2 text-paper/75 transition-colors hover:text-white">
+                  <Mail className="h-4 w-4 shrink-0 text-cyan-300" strokeWidth={1.75} />
+                  <span className="truncate">{CONTACT.email}</span>
+                </a>
+              </li>
+            </ul>
           </div>
         </div>
 
+        {/* Oversized wordmark */}
+        <p
+          aria-hidden="true"
+          className="pointer-events-none mt-16 select-none text-center font-display text-[length:clamp(4rem,17vw,14rem)] font-black leading-none tracking-tightest text-transparent [-webkit-text-stroke:1px_rgba(255,255,255,0.12)]"
+        >
+          {BRAND.name}
+        </p>
+
         {/* Legal */}
-        <div className="mt-12 flex flex-col gap-4 border-t border-paper/10 pt-6 text-xs text-paper/60 sm:flex-row sm:items-center sm:justify-between">
-          <p>© {year} {BRAND.legalName}. All rights reserved.</p>
+        <div className="mt-8 flex flex-col gap-4 border-t border-white/10 pt-6 text-xs text-paper/50 sm:flex-row sm:items-center sm:justify-between">
+          <p>
+            © {year} {BRAND.legalName}. All rights reserved.
+          </p>
           <div className="flex items-center gap-4">
             {CONTACT.certifications[0] && (
               <>
                 <span>{CONTACT.certifications[0]}</span>
-                <span>·</span>
+                <span aria-hidden="true">·</span>
               </>
             )}
-            <Link href="/privacy" className="hover:text-paper">Privacy</Link>
-            <Link href="/terms" className="hover:text-paper">Terms</Link>
+            <Link href="/privacy" className="transition-colors hover:text-paper">
+              Privacy
+            </Link>
+            <Link href="/terms" className="transition-colors hover:text-paper">
+              Terms
+            </Link>
           </div>
         </div>
       </Container>
@@ -138,7 +187,7 @@ function SocialLink({ href, icon: Icon, label }: { href: string; icon: typeof Fa
       target="_blank"
       rel="noopener noreferrer"
       aria-label={label}
-      className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-paper/10 text-paper transition-colors hover:bg-paper hover:text-ink"
+      className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 text-paper/80 transition-all duration-300 hover:-translate-y-0.5 hover:border-transparent hover:bg-gradient-to-br hover:from-cyan hover:to-magenta hover:text-white"
     >
       <Icon className="h-4 w-4" strokeWidth={1.75} />
     </a>

@@ -14,8 +14,8 @@ export default function ContactPage() {
   return (
     <>
       <Header />
-      <main id="main" className="bg-paper pt-16">
-        <ContactSection />
+      <main id="main" className="bg-paper">
+        <ContactSection standalone />
       </main>
       <FooterCMYK />
       <WhatsAppBubble />

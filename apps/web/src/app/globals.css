@@ -61,6 +61,7 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
+    .aurora-blob, .text-gradient-cmyk, .marquee-track { animation: none !important; }
     *, *::before, *::after {
       animation-duration: 0.01ms !important;
       animation-iteration-count: 1 !important;
@@ -132,6 +133,213 @@
       #0AAEEC 0 25%, #E91E63 25% 50%, #FFD600 50% 75%, #1A1A1A 75% 100%
     ));
   }
+
+  /* ── Glassmorphism ─────────────────────────────────────────
+   * .glass       — frosted light panel (for light or colourful backgrounds)
+   * .glass-dark  — frosted smoked panel (for dark / aurora backgrounds)
+   * Both fall back to a solid-ish fill where backdrop-filter is unsupported. */
+  .glass {
+    background: rgba(255, 255, 255, 0.62);
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    box-shadow:
+      0 1px 0 0 rgba(255, 255, 255, 0.8) inset,
+      0 20px 50px -20px rgba(15, 15, 15, 0.18);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+    backdrop-filter: blur(18px) saturate(160%);
+  }
+  .glass-dark {
+    background: rgba(255, 255, 255, 0.055);
+    border: 1px solid rgba(255, 255, 255, 0.11);
+    box-shadow:
+      0 1px 0 0 rgba(255, 255, 255, 0.08) inset,
+      0 24px 60px -24px rgba(0, 0, 0, 0.6);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+    backdrop-filter: blur(18px) saturate(140%);
+  }
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .glass { background: rgba(255, 255, 255, 0.94); }
+    .glass-dark { background: rgba(30, 30, 30, 0.92); }
+  }
+
+  /* ── Gradients ─────────────────────────────────────────────── */
+  .text-gradient-cmyk {
+    background-image: linear-gradient(100deg, #0AAEEC 0%, #6C7BF2 38%, #E91E63 68%, #FFB300 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: gradientPan 8s ease-in-out infinite alternate;
+  }
+  /* Darker variant that keeps 4.5:1 contrast on white backgrounds */
+  .text-gradient-ink {
+    background-image: linear-gradient(100deg, #06769E 0%, #C2185B 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Dark mesh canvas used behind hero / dark sections */
+  .bg-mesh-dark {
+    background-color: #0B0B0F;
+    background-image:
+      radial-gradient(60% 50% at 10% 10%, rgba(10, 174, 236, 0.22), transparent 60%),
+      radial-gradient(50% 50% at 90% 20%, rgba(233, 30, 99, 0.18), transparent 60%),
+      radial-gradient(60% 50% at 60% 100%, rgba(255, 214, 0, 0.10), transparent 60%);
+  }
+  /* Inner-page hero band — static mesh + faint grid (no extra DOM needed) */
+  .page-hero {
+    background-color: #0B0B0F;
+    background-image:
+      radial-gradient(50% 70% at 8% 0%, rgba(10, 174, 236, 0.32), transparent 65%),
+      radial-gradient(45% 70% at 95% 10%, rgba(233, 30, 99, 0.26), transparent 65%),
+      radial-gradient(40% 60% at 60% 120%, rgba(255, 214, 0, 0.14), transparent 70%),
+      linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+    background-size: auto, auto, auto, 56px 56px, 56px 56px;
+  }
+
+  /* Soft light mesh for light sections */
+  .bg-mesh-light {
+    background-color: #FAFAF7;
+    background-image:
+      radial-gradient(45% 40% at 0% 0%, rgba(10, 174, 236, 0.10), transparent 70%),
+      radial-gradient(40% 40% at 100% 10%, rgba(233, 30, 99, 0.08), transparent 70%),
+      radial-gradient(50% 45% at 50% 100%, rgba(255, 214, 0, 0.10), transparent 70%);
+  }
+
+  /* Fine grid with a radial fade — gives depth to dark canvases */
+  .bg-grid-fade {
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+    background-size: 56px 56px;
+    -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, #000 30%, transparent 75%);
+    mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, #000 30%, transparent 75%);
+  }
+
+  /* Film grain — kills gradient banding, adds a printed-paper feel */
+  .bg-grain::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.07;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* Drifting aurora blobs (place inside a relative, overflow-hidden parent) */
+  .aurora-blob {
+    position: absolute;
+    border-radius: 9999px;
+    filter: blur(80px);
+    opacity: 0.55;
+    will-change: transform;
+    animation: auroraDrift 18s ease-in-out infinite alternate;
+  }
+
+  /* Animated gradient border — wrap content; set --radius to match */
+  .border-gradient {
+    position: relative;
+    isolation: isolate;
+  }
+  .border-gradient::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    padding: 1px;
+    border-radius: inherit;
+    background: linear-gradient(135deg, rgba(10, 174, 236, 0.9), rgba(233, 30, 99, 0.9), rgba(255, 214, 0, 0.9));
+    background-size: 200% 200%;
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 300ms var(--ease-standard);
+    animation: gradientPan 6s linear infinite;
+  }
+  .border-gradient:hover::before,
+  .border-gradient:focus-within::before {
+    opacity: 1;
+  }
+
+  /* Spotlight — a soft glow that follows the cursor (see SpotlightCard.tsx) */
+  .spotlight {
+    position: relative;
+    overflow: hidden;
+  }
+  .spotlight::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    border-radius: inherit;
+    background: radial-gradient(
+      420px circle at var(--spot-x, 50%) var(--spot-y, 50%),
+      var(--spot-color, rgba(10, 174, 236, 0.16)),
+      transparent 45%
+    );
+    opacity: 0;
+    transition: opacity 300ms var(--ease-standard);
+  }
+  .spotlight:hover::after {
+    opacity: 1;
+  }
+
+  /* Shine sweep on primary buttons */
+  .btn-shine {
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-shine > .shine {
+    position: absolute;
+    inset: 0;
+    transform: translateX(-120%) skewX(-20deg);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.45), transparent);
+    transition: transform 700ms var(--ease-emphasized);
+    pointer-events: none;
+  }
+  .btn-shine:hover > .shine {
+    transform: translateX(120%) skewX(-20deg);
+  }
+
+  /* Gradient primary button (CMYK). Pair with `btn-shine` + a <span class="shine"/> child. */
+  .btn-pill-gradient {
+    @apply btn-pill text-white;
+    background-image: linear-gradient(110deg, #0892C5 0%, #C2185B 100%);
+    box-shadow: 0 10px 30px -10px rgba(194, 24, 91, 0.55);
+  }
+  .btn-pill-gradient:hover {
+    box-shadow: 0 14px 36px -10px rgba(10, 174, 236, 0.6);
+  }
+
+  /* Glass ghost button for dark backgrounds */
+  .btn-pill-glass {
+    @apply btn-pill text-paper;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+  }
+  .btn-pill-glass:hover {
+    background: rgba(255, 255, 255, 0.16);
+  }
+
+  /* Eyebrow chip — glass pill with a live dot */
+  .chip-glass {
+    @apply inline-flex items-center gap-2 rounded-pill px-3.5 py-1.5 text-xs font-semibold uppercase tracking-tracked;
+  }
+}
+
+@keyframes gradientPan {
+  0%   { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}
+@keyframes auroraDrift {
+  0%   { transform: translate3d(0, 0, 0) scale(1); }
+  50%  { transform: translate3d(6%, -4%, 0) scale(1.12); }
+  100% { transform: translate3d(-5%, 5%, 0) scale(0.95); }
 }
 
 /* ─────────────────────────────────────────────────────────────

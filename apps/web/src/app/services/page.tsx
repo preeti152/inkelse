@@ -6,6 +6,7 @@ import { Header } from '@/components/layout/Header';
 import { FooterCMYK } from '@/components/layout/FooterCMYK';
 import { WhatsAppBubble } from '@/components/chat/WhatsAppBubble';
 import { Container } from '@/components/layout/Container';
+import { ServiceIcon } from '@/components/brand/ServiceIcon';
 
 export const metadata: Metadata = {
   title: 'Services',
@@ -17,7 +18,7 @@ export default function ServicesPage() {
     <>
       <Header />
       <main id="main" className="bg-paper">
-        <div className="bg-ink pt-32 pb-20 text-paper">
+        <div className="page-hero relative overflow-hidden pt-36 pb-24 text-paper md:pt-40 md:pb-28">
           <Container>
             <p className="eyebrow mb-3 text-cyan">What we do</p>
             <h1 className="font-display text-display-xl uppercase tracking-tightest">Services</h1>
@@ -40,7 +41,12 @@ export default function ServicesPage() {
                   style={{ backgroundColor: service.accent }}
                 />
                 <div className="relative z-10">
-                  <span className="text-4xl" aria-hidden>{service.emoji}</span>
+                  <span
+                    className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/80 shadow-sm ring-1 ring-black/5"
+                    style={{ color: service.accent === '#FFD600' ? '#B38F00' : service.accent }}
+                  >
+                    <ServiceIcon name={service.icon} className="h-6 w-6" />
+                  </span>
                   <h2 className="mt-4 text-xl font-bold text-ink transition-colors duration-500 group-hover:text-white">
                     {service.name}
                   </h2>
