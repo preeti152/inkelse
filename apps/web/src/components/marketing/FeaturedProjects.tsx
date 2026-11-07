@@ -1,226 +1,122 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { motion, useReducedMotion, useScroll, useSpring, useTransform, type MotionValue } from 'framer-motion';
-import { ArrowRight, ArrowUpRight, MessageCircle } from 'lucide-react';
-import { PROJECTS, getWhatsAppUrl, type Project } from '@inkora/brand';
-import { Container } from '@/components/layout/Container';
+import { motion } from 'framer-motion';
+import { ArrowUpRight, ArrowRight } from 'lucide-react';
+import { PROJECTS, type Project } from '@inkora/brand';
 import { Stage } from '@/components/layout/Stage';
-import { SectionHeading } from '@/components/motion/Reveal';
-import { lit } from '@/lib/lit';
+import { Logo } from '@/components/brand/Logo';
+import { Reveal, SectionHeading, StaggerGroup, itemVariants } from '@/components/motion/Reveal';
 import { cn } from '@/lib/cn';
 
 /**
- * Section 4 — Featured work.
- *
- * Desktop (≥1024px, motion allowed): the section pins and the case-study cards
- * glide horizontally as you scroll vertically, with a progress rail.
- * Mobile / reduced motion: a native horizontal scroller with snap points.
+ * Section — Selected work. A typographic bento on coal: the lead case study
+ * takes a 2×2 stone tile, the rest are coal tiles that invert on hover,
+ * finished with a "your brand next" tile. Hairlines, no gaps, no filler.
  */
 export function FeaturedProjects() {
-  const reduce = useReducedMotion();
-  const [pinned, setPinned] = useState(false);
-
-  // Pin only on wide screens when motion is allowed.
-  useEffect(() => {
-    const mq = window.matchMedia('(min-width: 1024px)');
-    const update = () => setPinned(mq.matches && !reduce);
-    update();
-    mq.addEventListener('change', update);
-    return () => mq.removeEventListener('change', update);
-  }, [reduce]);
-
-  return pinned ? <PinnedGallery /> : <SwipeGallery />;
-}
-
-function Heading() {
   return (
-    <SectionHeading
-      eyebrow="Selected work"
-      title="Projects that"
-      accent="speak for us."
-      lead="Real branding work, delivered end-to-end — from the first sketch to the box on the doorstep."
-    />
-  );
-}
+    <Stage id="work" tone="coal">
+      <div className="mx-auto grid max-w-[90rem] gap-10 px-6 py-20 md:px-10 md:py-24 lg:grid-cols-12 lg:px-14">
+        <SectionHeading tone="light" className="lg:col-span-7" label="Selected work" lines={['Projects that', 'speak for us.']} />
+        <Reveal delay={0.15} className="flex flex-col justify-end lg:col-span-5">
+          <p className="text-lg leading-relaxed text-sand/70">
+            Real branding work, delivered end-to-end — from the first sketch to the box on the doorstep.
+          </p>
+          <Link href="/projects" className="group mt-6 inline-flex w-fit items-center gap-2 text-[12px] font-medium uppercase tracking-[0.22em] text-sand-50">
+            <span className="link-u pb-1 group-hover:[background-size:100%_1px]">All projects</span>
+            <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" strokeWidth={1.5} />
+          </Link>
+        </Reveal>
+      </div>
 
-function Cards() {
-  return (
-    <>
-      {PROJECTS.map((p, i) => (
-        <ProjectCard key={p.slug} project={p} index={i} />
-      ))}
-      <NextProjectCard />
-    </>
-  );
-}
-
-/** Desktop: vertical scroll drives horizontal travel while the section is pinned. */
-function PinnedGallery() {
-  const wrapRef = useRef<HTMLDivElement>(null);
-  const trackRef = useRef<HTMLDivElement>(null);
-  const [distance, setDistance] = useState(0);
-
-  useEffect(() => {
-    const measure = () => {
-      if (trackRef.current) setDistance(Math.max(0, trackRef.current.scrollWidth - window.innerWidth));
-    };
-    measure();
-    const t = setTimeout(measure, 400); // re-measure once fonts settle
-    window.addEventListener('resize', measure);
-    return () => {
-      clearTimeout(t);
-      window.removeEventListener('resize', measure);
-    };
-  }, []);
-
-  const { scrollYProgress } = useScroll({ target: wrapRef, offset: ['start start', 'end end'] });
-  const smooth = useSpring(scrollYProgress, { stiffness: 120, damping: 30, restDelta: 0.001 });
-  const x = useTransform(smooth, [0, 1], [0, -distance]);
-
-  return (
-    <Stage id="work" glow="magenta">
-      <div ref={wrapRef} style={{ height: `calc(100vh + ${distance}px)` }} className="relative">
-        <div className="sticky top-0 flex h-screen flex-col justify-center overflow-hidden">
-          <Container className="flex w-full items-end justify-between gap-8">
-            <Heading />
-            <ProgressRail progress={smooth} />
-          </Container>
-          <motion.div
-            ref={trackRef}
-            style={{ x }}
-            className="mt-12 flex w-max gap-6 pl-[max(3rem,calc((100vw_-_80rem)/2_+_3rem))] pr-12"
-          >
-            <Cards />
+      <StaggerGroup className="grid gap-px border-y border-sand/10 bg-sand/10 md:grid-cols-2 lg:grid-cols-3">
+        {PROJECTS.slice(0, 5).map((p, i) => (
+          <motion.div key={p.slug} variants={itemVariants} className={cn(i === 0 && 'md:col-span-2 lg:row-span-2')}>
+            <ProjectCard project={p} index={i} featured={i === 0} />
           </motion.div>
-        </div>
-      </div>
+        ))}
+        <motion.div variants={itemVariants} className="bg-coal">
+          <Link href="/#contact" className="group flex h-full min-h-[18rem] flex-col justify-between p-8 md:p-10">
+            <Logo variant="monogram" className="h-10 w-10 text-sand-50" />
+            <div>
+              <p className="label text-sand/50">Your brand, next</p>
+              <p className="mt-3 text-3xl font-light leading-tight text-sand-50">Let&apos;s make something people keep.</p>
+              <span className="mt-6 inline-flex items-center gap-2 text-[12px] font-medium uppercase tracking-[0.22em] text-sand-50">
+                <span className="link-u pb-1 group-hover:[background-size:100%_1px]">Start a project</span>
+                <ArrowRight className="arrow-nudge h-4 w-4" strokeWidth={1.5} />
+              </span>
+            </div>
+          </Link>
+        </motion.div>
+      </StaggerGroup>
     </Stage>
   );
 }
 
-/** Mobile / reduced motion: native horizontal scroller with snap points. */
-function SwipeGallery() {
-  return (
-    <Stage id="work" glow="magenta" className="py-24 md:py-32">
-      <Container>
-        <Heading />
-      </Container>
-      <div className="mt-12 flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth px-6 pb-6 [scrollbar-width:none] md:gap-6 md:px-8 [&::-webkit-scrollbar]:hidden">
-        <Cards />
-      </div>
-      <Container>
-        <Link href="/projects" className="group mt-4 inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-white/70 hover:text-white">
-          View all projects
-          <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" strokeWidth={2} />
-        </Link>
-      </Container>
-    </Stage>
-  );
-}
-
-/* ───────────────────────────────────────────────────────────── */
-
-function ProgressRail({ progress }: { progress: MotionValue<number> }) {
-  return (
-    <div className="hidden shrink-0 items-center gap-4 pb-3 lg:flex">
-      <span className="text-xs font-medium uppercase tracking-tracked text-white/40">Scroll</span>
-      <div className="h-px w-40 overflow-hidden bg-white/10">
-        <motion.div style={{ scaleX: progress }} className="h-full origin-left bg-gradient-to-r from-cyan to-magenta" />
-      </div>
-      <Link href="/projects" className="group inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-white/70 hover:text-white">
-        All work
-        <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" strokeWidth={2} />
-      </Link>
-    </div>
-  );
-}
-
-/** Case-study card. Pass `className` to override the default carousel widths (e.g. in a grid). */
-export function ProjectCard({ project, index, className }: { project: Project; index: number; className?: string }) {
-  const accent = lit(project.accent);
-  const wide = index === 0 && !className;
+/** Typographic case-study tile. `featured` renders the large stone version. */
+export function ProjectCard({
+  project,
+  index,
+  featured = false,
+  className,
+}: {
+  project: Project;
+  index: number;
+  featured?: boolean;
+  className?: string;
+}) {
   return (
     <Link
       href={`/projects/${project.slug}`}
       className={cn(
-        'group relative flex shrink-0 snap-start flex-col overflow-hidden rounded-[2rem] border border-white/[0.08] bg-night-800 transition-all duration-500 ease-emphasized hover:-translate-y-1.5 hover:border-white/20',
-        className ?? (wide ? 'w-[86vw] sm:w-[34rem] lg:w-[44rem]' : 'w-[78vw] sm:w-[24rem] lg:w-[28rem]'),
+        'group relative flex h-full min-h-[18rem] flex-col justify-between overflow-hidden p-8 transition-colors duration-500 md:p-10',
+        featured ? 'bg-sand text-coal lg:min-h-[38rem]' : 'bg-coal text-sand-50 hover:bg-sand-50 hover:text-coal',
+        className,
       )}
     >
-      {/* Visual */}
-      <div className="relative m-2 h-64 overflow-hidden rounded-[1.6rem] md:h-80">
-        <div
-          className="absolute inset-0 transition-transform duration-[1400ms] ease-emphasized group-hover:scale-110"
-          style={{
-            background: `radial-gradient(120% 100% at 0% 0%, ${accent} 0%, ${accent}99 30%, #121218 80%)`,
-          }}
-        />
-        {/* Halftone dots — a print nod */}
-        <div
-          className="absolute inset-0 opacity-30 mix-blend-overlay"
-          style={{
-            backgroundImage: 'radial-gradient(circle at center, rgba(255,255,255,0.55) 1px, transparent 1.6px)',
-            backgroundSize: '14px 14px',
-          }}
-        />
-        {/* Light sweep on hover */}
-        <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/15 to-transparent transition-transform duration-1000 ease-emphasized group-hover:translate-x-full" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+      {/* Oversized index numeral */}
+      <span
+        aria-hidden="true"
+        className={cn(
+          'pointer-events-none absolute -right-2 -top-6 select-none font-light leading-none tracking-tighter opacity-[0.07] transition-transform duration-700 group-hover:-translate-y-1',
+          featured ? 'text-[14rem] md:text-[18rem]' : 'text-[9rem]',
+        )}
+      >
+        {String(index + 1).padStart(2, '0')}
+      </span>
 
-        <span className="absolute right-6 top-3 font-display text-[7rem] font-semibold leading-none tracking-tighter text-white/10">
-          {String(index + 1).padStart(2, '0')}
-        </span>
-        <span className="absolute left-5 top-5 rounded-pill border border-white/15 bg-black/30 px-3 py-1 text-[11px] font-semibold uppercase tracking-tracked text-white backdrop-blur-md">
-          {project.industry}
-        </span>
-        <div className="absolute inset-x-6 bottom-5">
-          <p className="text-xs font-medium uppercase tracking-tracked text-white/60">{project.client}</p>
-          <h3 className={cn('mt-1 font-display font-semibold leading-tight tracking-tight text-white text-balance', wide ? 'text-3xl md:text-4xl' : 'text-2xl')}>
-            {project.title}
-          </h3>
-        </div>
-        <span className="absolute right-5 top-5 flex h-11 w-11 scale-75 items-center justify-center rounded-full bg-white text-night opacity-0 transition-all duration-500 ease-bounce group-hover:scale-100 group-hover:opacity-100">
-          <ArrowUpRight className="h-5 w-5" strokeWidth={2.25} />
+      <div className="relative flex items-center justify-between gap-4">
+        <span className="label opacity-70">{project.industry}</span>
+        <span
+          className={cn(
+            'flex h-10 w-10 shrink-0 items-center justify-center rounded-full border transition-all duration-300',
+            featured
+              ? 'border-coal/25 group-hover:border-coal group-hover:bg-coal group-hover:text-sand'
+              : 'border-sand/25 group-hover:border-coal/40',
+          )}
+        >
+          <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} />
         </span>
       </div>
 
-      {/* Body */}
-      <div className="flex flex-1 flex-col px-6 pb-6 pt-3">
-        <p className="line-clamp-3 text-[15px] leading-relaxed text-white/60">{project.summary}</p>
-        <div className="mt-auto flex flex-wrap gap-2 pt-5">
-          {project.services.slice(0, 4).map((s) => (
-            <span key={s} className="rounded-pill border border-white/[0.08] bg-white/[0.04] px-3 py-1 text-xs text-white/65">
-              {s}
-            </span>
-          ))}
-        </div>
-      </div>
-    </Link>
-  );
-}
-
-function NextProjectCard() {
-  return (
-    <div className="border-beam relative flex w-[78vw] shrink-0 snap-start flex-col justify-between overflow-hidden rounded-[2rem] border border-white/[0.08] bg-gradient-to-br from-white/[0.06] to-transparent p-8 sm:w-[24rem] lg:w-[26rem]">
-      <div aria-hidden="true" className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-gradient-to-br from-cyan/30 to-magenta/30 blur-3xl" />
       <div className="relative">
-        <p className="text-xs font-semibold uppercase tracking-tracked text-white/45">Your brand, next</p>
-        <p className="mt-4 font-display text-3xl font-semibold leading-tight tracking-tight text-white">
-          Let&apos;s make something <span className="font-serif font-normal italic text-gradient-cmyk">people keep.</span>
+        <p className="text-[13px] opacity-60">{project.client}</p>
+        <h3
+          className={cn(
+            'mt-2 font-normal leading-[1.08] tracking-[-0.015em] text-balance',
+            featured ? 'text-[length:clamp(2rem,3.8vw,3.5rem)]' : 'text-2xl md:text-[1.75rem]',
+          )}
+        >
+          {project.title}
+        </h3>
+        <p className={cn('mt-4 leading-relaxed opacity-70', featured ? 'max-w-lg text-lg' : 'line-clamp-2 text-[15px]')}>
+          {project.summary}
+        </p>
+        <p className="mt-6 text-[11px] font-medium uppercase leading-relaxed tracking-[0.2em] opacity-60">
+          {project.services.slice(0, featured ? 5 : 3).join('  ·  ')}
         </p>
       </div>
-      <div className="relative mt-10 flex flex-col gap-3">
-        <Link href="/#contact" className="btn-light group">
-          Start a project
-          <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" strokeWidth={2.25} />
-        </Link>
-        <a href={getWhatsAppUrl()} target="_blank" rel="noopener noreferrer" className="btn-pill-glass">
-          <MessageCircle className="h-4 w-4" strokeWidth={1.75} />
-          WhatsApp us
-        </a>
-      </div>
-    </div>
+    </Link>
   );
 }

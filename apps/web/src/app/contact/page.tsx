@@ -14,7 +14,7 @@ export default function ContactPage() {
   return (
     <>
       <Header />
-      <main id="main" className="bg-night">
+      <main id="main" className="bg-sand">
         <ContactSection standalone />
       </main>
       <FooterCMYK />

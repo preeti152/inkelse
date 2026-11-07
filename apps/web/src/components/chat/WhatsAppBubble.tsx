@@ -40,11 +40,11 @@ export function WhatsAppBubble() {
         <div
           className={cn(
             'fixed bottom-24 right-5 z-50 w-80 max-w-[calc(100vw-2.5rem)]',
-            'rounded-3xl border border-white/10 bg-night-800/90 shadow-[0_30px_80px_-20px_rgba(0,0,0,0.9)] backdrop-blur-xl',
+            'rounded-2xl border border-coal/10 bg-sand-50 shadow-[0_30px_60px_-20px_rgba(0,0,0,0.35)]',
             'animate-fade-in-up overflow-hidden',
           )}
         >
-          <div className="flex items-center justify-between border-b border-white/10 bg-gradient-to-br from-[#25D366]/25 to-transparent px-5 py-4 text-white">
+          <div className="flex items-center justify-between bg-coal px-5 py-4 text-sand-50">
             <div className="flex items-center gap-3">
               <WhatsAppIcon className="h-6 w-6" />
               <div>
@@ -63,7 +63,7 @@ export function WhatsAppBubble() {
           </div>
 
           <div className="p-4">
-            <p className="mb-3 text-xs text-white/45">Start a conversation</p>
+            <p className="label mb-3 text-mute">Start a conversation</p>
             <div className="space-y-2">
               {QUICK_REPLIES.map((reply) => (
                 <a
@@ -72,8 +72,8 @@ export function WhatsAppBubble() {
                   target="_blank"
                   rel="noopener noreferrer"
                   className={cn(
-                    'block rounded-xl border border-white/[0.08] bg-white/[0.04] px-4 py-3',
-                    'text-sm text-white/85 hover:border-[#25D366]/60 hover:bg-[#25D366]/15 hover:text-white',
+                    'block rounded-xl border border-coal/10 bg-white/60 px-4 py-3',
+                    'text-[15px] text-coal hover:border-coal hover:bg-coal hover:text-sand-50',
                     'transition-colors duration-150 ease-standard',
                   )}
                 >
@@ -81,12 +81,12 @@ export function WhatsAppBubble() {
                 </a>
               ))}
             </div>
-            <div className="mt-4 border-t border-white/[0.08] pt-4 text-center">
+            <div className="mt-4 border-t border-coal/10 pt-4 text-center">
               <a
                 href={getWhatsAppUrl()}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-xs text-white/45 transition-colors hover:text-white"
+                className="text-xs text-mute transition-colors hover:text-coal"
               >
                 Message us directly → {CONTACT.phone}
               </a>
@@ -102,8 +102,8 @@ export function WhatsAppBubble() {
         onClick={() => setIsOpen((v) => !v)}
         className={cn(
           'fixed bottom-5 right-5 z-50 inline-flex h-14 w-14 items-center justify-center',
-          'rounded-full bg-[#25D366] text-[#05210F] shadow-[0_10px_30px_-6px_rgba(37,211,102,0.6)]',
-          'hover:bg-[#3BE07A] hover:scale-105',
+          'rounded-full bg-coal text-sand-50 shadow-[0_12px_30px_-8px_rgba(0,0,0,0.5)] ring-1 ring-sand/20',
+          'hover:bg-coal-700 hover:scale-105',
           'transition-all duration-200 ease-standard',
           !isOpen && 'animate-pulse-soft',
         )}

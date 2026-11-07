@@ -1,57 +1,48 @@
 import Link from 'next/link';
-import { ArrowRight, MessageCircle } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { getWhatsAppUrl } from '@inkora/brand';
-import { Container } from '@/components/layout/Container';
-import { Stage } from '@/components/layout/Stage';
-import { Lamp } from '@/components/effects/Lamp';
-import { SplitHeadline, Reveal } from '@/components/motion/Reveal';
+import { Logo } from '@/components/brand/Logo';
+import { MaskLines, Reveal } from '@/components/motion/Reveal';
 
 /**
- * CtaBand — reusable closing call-to-action for inner pages.
- * Lamp-lit headline with a primary "quote" button and a WhatsApp option.
+ * CtaBand — closing call-to-action for inner pages: a coal band with a
+ * masked headline on the left and the two actions + seal on the right.
  */
 export function CtaBand({
-  title = 'Ready when',
-  accent = 'you are.',
+  lines = ['Ready when', 'you are.'],
   lead = 'Tell us what you need — we’ll reply with a clear, itemised quote within a few hours.',
   whatsappMessage,
 }: {
-  title?: string;
-  accent?: string;
+  lines?: string[];
   lead?: string;
   whatsappMessage?: string;
 }) {
   return (
-    <Stage className="py-28 md:py-36">
-      <Lamp color="cyan" width={28} />
-      <Container className="relative">
-        <div className="mx-auto max-w-3xl pt-12 text-center">
-          <SplitHeadline
-            text={title}
-            accent={accent}
-            className="font-display text-[length:clamp(2.25rem,5.5vw,4.5rem)] font-semibold leading-[1.02] tracking-[-0.04em] text-white text-balance"
-          />
-          <Reveal delay={0.15}>
-            <p className="mx-auto mt-5 max-w-xl text-lg text-white/60">{lead}</p>
-            <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <Link href="/contact" className="btn-light btn-shine group !px-7 !py-3.5">
-                <span className="shine" aria-hidden="true" />
-                Get a free quote
-                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" strokeWidth={2.25} />
-              </Link>
-              <a
-                href={getWhatsAppUrl(whatsappMessage)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-pill-glass !px-7 !py-3.5"
-              >
-                <MessageCircle className="h-4 w-4" strokeWidth={1.75} />
-                WhatsApp us
-              </a>
-            </div>
+    <section aria-label="Get a quote" className="bg-coal text-sand-50">
+      <div className="mx-auto grid max-w-[90rem] gap-10 px-6 py-20 md:px-10 md:py-24 lg:grid-cols-12 lg:px-14">
+        <div className="lg:col-span-7">
+          <Reveal>
+            <p className="label text-sand/55">Start a project</p>
           </Reveal>
+          <MaskLines
+            lines={lines}
+            className="mt-6 text-[length:clamp(2.5rem,5vw,4.5rem)] font-normal leading-[1.03] tracking-[-0.025em]"
+          />
         </div>
-      </Container>
-    </Stage>
+        <Reveal delay={0.15} className="flex flex-col justify-end lg:col-span-5">
+          <p className="text-lg leading-relaxed text-sand/70">{lead}</p>
+          <div className="mt-8 flex flex-wrap items-center gap-3">
+            <Link href="/contact" className="btn-light group">
+              Get a quote
+              <ArrowRight className="arrow-nudge h-4 w-4" strokeWidth={1.5} />
+            </Link>
+            <a href={getWhatsAppUrl(whatsappMessage)} target="_blank" rel="noopener noreferrer" className="btn-line-light">
+              WhatsApp us
+            </a>
+            <Logo variant="monogram" className="ml-auto hidden h-11 w-11 text-sand/60 sm:block" />
+          </div>
+        </Reveal>
+      </div>
+    </section>
   );
 }

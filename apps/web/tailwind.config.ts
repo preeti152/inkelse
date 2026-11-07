@@ -81,7 +81,30 @@ const config: Config = {
           950: '#0A0A0A',
         },
 
-        // Night surfaces — the dark "studio" the site lives in
+        // ── Atelier palette (from the brand board) ──────────────
+        // Warm stone surfaces
+        sand: {
+          DEFAULT: '#E6E1DA',
+          50: '#F5F2ED',
+          100: '#EEEAE4',
+          200: '#E6E1DA',
+          300: '#D9D2C9',
+          400: '#BFB6AB',
+          500: '#8C857C',
+        },
+        // Matte blacks
+        coal: {
+          DEFAULT: '#111111',
+          950: '#0B0B0B',
+          900: '#111111',
+          800: '#181818',
+          700: '#222222',
+          600: '#2E2E2E',
+        },
+        // Muted text on sand (≥ 5:1 on sand-200)
+        mute: '#5C5750',
+
+        // Night surfaces (legacy)
         night: {
           DEFAULT: '#07070A',
           900: '#07070A',
@@ -108,8 +131,8 @@ const config: Config = {
       },
 
       fontFamily: {
-        sans: ['var(--font-inter)', 'system-ui', '-apple-system', 'sans-serif'],
-        display: ['var(--font-inter)', 'Helvetica Neue', 'system-ui', 'sans-serif'],
+        sans: ['var(--font-sans)', 'system-ui', '-apple-system', 'sans-serif'],
+        display: ['var(--font-sans)', 'Helvetica Neue', 'system-ui', 'sans-serif'],
         serif: ['var(--font-serif)', 'Georgia', 'serif'],
         mono: ['ui-monospace', 'monospace'],
       },
@@ -125,6 +148,8 @@ const config: Config = {
 
       letterSpacing: {
         tightest: '-0.04em',
+        label: '0.28em',
+        wordmark: '0.14em',
         tracked: '0.18em',
         'tracked-wide': '0.24em',
       },

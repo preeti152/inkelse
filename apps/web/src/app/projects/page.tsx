@@ -3,7 +3,6 @@ import { PROJECTS } from '@inkora/brand';
 import { Header } from '@/components/layout/Header';
 import { FooterCMYK } from '@/components/layout/FooterCMYK';
 import { WhatsAppBubble } from '@/components/chat/WhatsAppBubble';
-import { Container } from '@/components/layout/Container';
 import { PageHero } from '@/components/layout/PageHero';
 import { ProjectCard } from '@/components/marketing/FeaturedProjects';
 import { CtaBand } from '@/components/marketing/CtaBand';
@@ -17,28 +16,23 @@ export default function ProjectsPage() {
   return (
     <>
       <Header />
-      <main id="main" className="bg-night">
+      <main id="main" className="bg-coal">
         <PageHero
-          eyebrow="Our work"
-          title="Work that"
-          accent="speaks for us."
+          label="Our work"
+          lines={['Work that', 'speaks for us.']}
           lead="A selection of branding projects we’ve delivered end-to-end — design, print and delivery."
+          image={{ src: '/images/brand/tote.jpg', alt: 'Black tote with large Inkelse wordmark' }}
         />
 
-        <Container className="py-20 md:py-28">
-          <div className="grid gap-5 md:grid-cols-2">
-            {PROJECTS.map((project, i) => (
-              <ProjectCard
-                key={project.slug}
-                project={project}
-                index={i}
-                className={i === 0 ? 'w-full md:col-span-2' : 'w-full'}
-              />
-            ))}
-          </div>
-        </Container>
+        <div className="grid gap-px bg-sand/10 md:grid-cols-2">
+          {PROJECTS.map((project, i) => (
+            <div key={project.slug} className={i === 0 ? 'md:col-span-2' : ''}>
+              <ProjectCard project={project} index={i} featured={i === 0} className={i === 0 ? 'lg:!min-h-[26rem]' : undefined} />
+            </div>
+          ))}
+        </div>
 
-        <CtaBand title="Want work like this" accent="for your brand?" />
+        <CtaBand lines={['Want work like this', 'for your brand?']} />
       </main>
       <FooterCMYK />
       <WhatsAppBubble />

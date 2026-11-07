@@ -3,25 +3,26 @@ import { FooterCMYK } from '@/components/layout/FooterCMYK';
 import { WhatsAppBubble } from '@/components/chat/WhatsAppBubble';
 import { ScrollNarrative } from '@/components/marketing/ScrollNarrative';
 import { HeroInkelse } from '@/components/marketing/HeroInkelse';
-import { Industries } from '@/components/marketing/Industries';
+import { BrandBand } from '@/components/marketing/BrandBand';
 import { Services } from '@/components/marketing/Services';
+import { StudioStatement } from '@/components/marketing/StudioStatement';
 import { FeaturedProjects } from '@/components/marketing/FeaturedProjects';
 import { WhyInkelse } from '@/components/marketing/WhyInkelse';
+import { Industries } from '@/components/marketing/Industries';
 import { HowWeWork } from '@/components/marketing/HowWeWork';
 import { TestimonialsSection } from '@/components/marketing/TestimonialsSection';
 import { ContactSection } from '@/components/marketing/ContactSection';
 
 /**
- * Home — Inkelse "Ink Night" homepage.
+ * Home — "Atelier" homepage, composed from the brand board.
+ * Surfaces alternate stone ↔ coal like the board itself; every section is
+ * full-bleed with hairline grids, so there is no dead space.
  *
- * 1. Hero             — lamp-lit headline + tilting showcase of printed artifacts
- * 2. Industries       — "built for" dual marquee
- * 3. Services         — interactive tab showcase (6 disciplines)
- * 4. FeaturedProjects — pinned horizontal case-study gallery
- * 5. WhyInkelse       — bento of reasons, each with a living micro-visual
- * 6. HowWeWork        — scroll-lit vertical process rail (#process)
- * 7. Testimonials     — genuine feedback only (honest placeholder until provided)
- * 8. Contact          — lamp-lit closing CTA + quote form (#contact)
+ *  Hero (sand, split with flat-lay)  →  BrandBand (coal, 4 pillars)
+ *  Services (paper grid)             →  StudioStatement (image | story)
+ *  FeaturedProjects (coal bento)     →  WhyInkelse (sand grid)
+ *  Industries (coal marquee)         →  HowWeWork (paper, drawn rule)
+ *  Testimonials (slim, honest)       →  Contact (coal | sand split)
  */
 export default function HomePage() {
   return (
@@ -29,12 +30,14 @@ export default function HomePage() {
       <ScrollNarrative />
       <Header />
 
-      <main id="main" className="bg-night">
+      <main id="main">
         <HeroInkelse />
-        <Industries />
+        <BrandBand />
         <Services />
+        <StudioStatement />
         <FeaturedProjects />
         <WhyInkelse />
+        <Industries />
         <HowWeWork />
         <TestimonialsSection />
         <ContactSection />

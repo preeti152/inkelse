@@ -17,12 +17,12 @@ export default function TermsPage() {
   return (
     <>
       <Header />
-      <main id="main" className="bg-night">
-        <PageHero eyebrow="Legal" title="Terms of Service" lead={`Last updated: ${LAST_UPDATED}`} />
+      <main id="main" className="bg-sand-100">
+        <PageHero label="Legal" lines={['Terms of Service']} lead={`Last updated: ${LAST_UPDATED}`} />
 
         {/* Body */}
         <Container variant="editorial" className="py-20 md:py-24">
-          <div className="prose-legal space-y-12 text-white/65 [&_strong]:text-white">
+          <div className="prose-legal space-y-12 text-[17px] leading-relaxed text-coal/75 [&_strong]:font-medium [&_strong]:text-coal">
             <section>
               <p className="text-lg leading-relaxed">
                 These terms govern your use of the {BRAND.nameDisplay} website and the services we provide. By requesting
@@ -78,11 +78,11 @@ export default function TermsPage() {
             <Section title="Contact us">
               <p>
                 Questions about these terms? Reach us at{' '}
-                <a href={`mailto:${CONTACT.email}`} className="text-cyan-300 underline underline-offset-4 hover:text-white">
+                <a href={`mailto:${CONTACT.email}`} className="text-coal underline underline-offset-4 hover:opacity-70">
                   {CONTACT.email}
                 </a>{' '}
                 or call{' '}
-                <a href={`tel:${CONTACT.phoneHref}`} className="text-cyan-300 underline underline-offset-4 hover:text-white">
+                <a href={`tel:${CONTACT.phoneHref}`} className="text-coal underline underline-offset-4 hover:opacity-70">
                   {CONTACT.phone}
                 </a>
                 .
@@ -100,7 +100,7 @@ export default function TermsPage() {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section>
-      <h2 className="mb-4 text-xl font-semibold tracking-tight text-white">{title}</h2>
+      <h2 className="label mb-4 text-coal">{title}</h2>
       <div className="leading-relaxed">{children}</div>
     </section>
   );

@@ -2,51 +2,43 @@
 
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { useEffect, useState } from 'react';
-import { Quote, MessageCircle } from 'lucide-react';
 import { TESTIMONIALS, getWhatsAppUrl } from '@inkora/brand';
-import { Container } from '@/components/layout/Container';
 import { Stage } from '@/components/layout/Stage';
-import { Reveal, SectionHeading } from '@/components/motion/Reveal';
+import { Reveal } from '@/components/motion/Reveal';
 
 /**
- * Section 7 — Testimonials.
- * Renders a carousel ONLY when there is genuine client feedback.
- * Until then, a compact, honest invitation (no fabricated reviews, ever).
+ * Testimonials — renders ONLY genuine client feedback. Until some exists, a
+ * compact, honest band invites the first review (no fabricated quotes, ever).
  */
 export function TestimonialsSection() {
-  const hasTestimonials = TESTIMONIALS.length > 0;
+  if (TESTIMONIALS.length > 0) {
+    return (
+      <Stage tone="sand" divider className="py-20 md:py-28">
+        <div className="mx-auto max-w-4xl px-6 text-center md:px-10">
+          <p className="label text-mute">Client voices</p>
+          <TestimonialCarousel />
+        </div>
+      </Stage>
+    );
+  }
 
   return (
-    <Stage className="py-24 md:py-28">
-      <Container variant="editorial">
-        <SectionHeading align="center" eyebrow="Client voices" title="What clients" accent="say." />
-
-        {hasTestimonials ? (
-          <TestimonialCarousel />
-        ) : (
-          <Reveal delay={0.1} className="mx-auto mt-12 max-w-2xl">
-            <div className="border-beam relative overflow-hidden rounded-[2rem] border border-white/[0.08] bg-night-800 p-10 text-center">
-              <Quote aria-hidden="true" className="mx-auto h-10 w-10 text-white/15" strokeWidth={1} />
-              <p className="mt-5 font-serif text-2xl italic leading-snug text-white md:text-3xl">
-                Great work speaks — soon our clients will too.
-              </p>
-              <p className="mx-auto mt-4 max-w-md text-[15px] leading-relaxed text-white/55">
-                We&apos;re gathering genuine feedback from the brands we work with. Real testimonials will appear here —
-                no fabricated reviews, ever.
-              </p>
-              <a
-                href={getWhatsAppUrl('Hi Inkelse! I worked with you and would like to share feedback.')}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-pill-glass mt-8"
-              >
-                <MessageCircle className="h-4 w-4" strokeWidth={1.75} />
-                Worked with us? Share your feedback
-              </a>
-            </div>
-          </Reveal>
-        )}
-      </Container>
+    <Stage tone="sand" divider>
+      <Reveal className="mx-auto flex max-w-[90rem] flex-col items-start justify-between gap-6 px-6 py-12 md:flex-row md:items-center md:px-10 lg:px-14">
+        <div>
+          <p className="label text-mute">Client voices</p>
+          <p className="mt-3 text-2xl font-light text-coal md:text-3xl">Great work speaks — soon our clients will too.</p>
+          <p className="mt-2 text-[15px] text-coal/65">Real testimonials will appear here. No fabricated reviews, ever.</p>
+        </div>
+        <a
+          href={getWhatsAppUrl('Hi Inkelse! I worked with you and would like to share feedback.')}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="btn-line shrink-0"
+        >
+          Share your feedback
+        </a>
+      </Reveal>
     </Stage>
   );
 }
@@ -66,7 +58,7 @@ function TestimonialCarousel() {
 
   return (
     <div
-      className="relative mt-12 min-h-[260px] rounded-[2rem] border border-white/[0.08] bg-night-800 p-8 md:p-12"
+      className="mt-8"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onFocus={() => setPaused(true)}
@@ -75,26 +67,24 @@ function TestimonialCarousel() {
       <AnimatePresence mode="wait">
         <motion.figure
           key={index}
-          initial={{ opacity: 0, y: 16, filter: 'blur(6px)' }}
-          animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-          exit={{ opacity: 0, y: -12, filter: 'blur(6px)' }}
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -8 }}
           transition={{ duration: 0.5 }}
-          className="text-center"
           aria-live="polite"
         >
-          <blockquote className="font-serif text-2xl italic leading-relaxed text-white md:text-3xl">
+          <blockquote className="text-2xl font-light leading-relaxed text-coal md:text-4xl md:leading-snug">
             &ldquo;{current.quote}&rdquo;
           </blockquote>
-          <figcaption className="mt-6">
-            <p className="text-sm font-semibold text-white">{current.author}</p>
-            <p className="text-xs text-white/50">
+          <figcaption className="mt-8">
+            <p className="label text-coal">{current.author}</p>
+            <p className="mt-1 text-sm text-mute">
               {current.role}
               {current.company ? ` · ${current.company}` : ''}
             </p>
           </figcaption>
         </motion.figure>
       </AnimatePresence>
-
       <div className="mt-8 flex items-center justify-center gap-1">
         {TESTIMONIALS.map((_, i) => (
           <button
@@ -105,11 +95,7 @@ function TestimonialCarousel() {
             aria-current={i === index}
             className="flex h-11 w-11 items-center justify-center"
           >
-            <span
-              className={`block h-1.5 rounded-full transition-all duration-300 ${
-                i === index ? 'w-8 bg-gradient-to-r from-cyan to-magenta' : 'w-1.5 bg-white/25 hover:bg-white/50'
-              }`}
-            />
+            <span className={`block h-px transition-all duration-300 ${i === index ? 'w-10 bg-coal' : 'w-5 bg-coal/30'}`} />
           </button>
         ))}
       </div>

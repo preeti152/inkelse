@@ -2,20 +2,20 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Facebook, Instagram, Youtube, Twitter, ArrowRight, ArrowUpRight, Check, Mail, Phone, MessageCircle } from 'lucide-react';
+import { Facebook, Instagram, Youtube, Twitter, ArrowRight, Check } from 'lucide-react';
 import { BRAND, CONTACT, SOCIAL, SERVICES, getWhatsAppUrl } from '@inkora/brand';
-import { Container } from '@/components/layout/Container';
 import { Logo } from '@/components/brand/Logo';
 
-const COMPANY = [
+const STUDIO = [
   { href: '/projects', label: 'Work' },
-  { href: '/about', label: 'About' },
+  { href: '/about', label: 'Studio' },
+  { href: '/#process', label: 'Process' },
   { href: '/contact', label: 'Contact' },
 ];
 
 /**
- * Footer — quiet, dark close. Newsletter, link columns, direct channels and an
- * oversized wordmark with a slow band of light passing across it.
+ * Footer — coal, editorial. Big tracked wordmark + tagline, newsletter,
+ * link columns, legal strip with the k seal.
  */
 export function FooterCMYK() {
   const [email, setEmail] = useState('');
@@ -28,98 +28,84 @@ export function FooterCMYK() {
   };
 
   return (
-    <footer className="relative overflow-hidden bg-night text-white">
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0">
-        <div className="hairline absolute inset-x-0 top-0" />
-        <div className="absolute -bottom-40 left-1/2 h-80 w-[60rem] -translate-x-1/2 rounded-full bg-gradient-to-r from-cyan/20 via-[#8B7CF6]/15 to-magenta/20 blur-[120px]" />
-      </div>
-
-      <Container className="relative z-10 pb-10 pt-20 md:pt-24">
-        <div className="grid gap-12 lg:grid-cols-12">
-          {/* Brand + newsletter */}
-          <div className="lg:col-span-5">
-            <Link href="/" className="inline-block text-white" aria-label={`${BRAND.nameDisplay} home`}>
-              <Logo variant="primary" />
+    <footer className="border-t border-sand/10 bg-coal text-sand-50">
+      <div className="mx-auto max-w-[90rem] px-6 md:px-10 lg:px-14">
+        {/* Wordmark band */}
+        <div className="grid gap-10 border-b border-sand/15 py-16 md:py-20 lg:grid-cols-12">
+          <div className="lg:col-span-7">
+            <Link href="/" aria-label={`${BRAND.nameDisplay} home`} className="inline-block text-sand-50">
+              <Logo variant="stacked" className="text-[length:clamp(1.75rem,4.5vw,3.25rem)]" />
             </Link>
-            <p className="mt-5 max-w-sm text-[15px] leading-relaxed text-white/55">{BRAND.longDescription}</p>
-
-            <form onSubmit={handleSubscribe} className="mt-8 max-w-md">
-              <label htmlFor="footer-email" className="text-xs font-semibold uppercase tracking-tracked text-white/45">
-                Print tips, occasionally
-              </label>
-              {subscribed ? (
-                <p role="status" className="mt-3 inline-flex items-center gap-2 rounded-pill border border-white/10 bg-white/5 px-5 py-3 text-sm font-medium text-white">
-                  <Check className="h-4 w-4 text-[#4ADE80]" strokeWidth={2.5} />
-                  You&apos;re in — thanks!
-                </p>
-              ) : (
-                <div className="mt-3 flex items-center gap-2 rounded-pill border border-white/10 bg-white/[0.04] p-1.5 transition-colors focus-within:border-white/25">
-                  <input
-                    id="footer-email"
-                    type="email"
-                    required
-                    autoComplete="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="you@company.com"
-                    className="min-w-0 flex-1 bg-transparent px-4 py-2 text-white placeholder:text-white/30 focus:outline-none"
-                  />
-                  <button type="submit" aria-label="Subscribe" className="btn-light !min-h-0 shrink-0 !px-4 !py-2.5">
-                    <ArrowRight className="h-4 w-4" strokeWidth={2.25} />
-                  </button>
-                </div>
-              )}
-            </form>
           </div>
+          <form onSubmit={handleSubscribe} className="flex flex-col justify-end lg:col-span-5">
+            <label htmlFor="footer-email" className="label text-sand/55">
+              Print notes, occasionally
+            </label>
+            {subscribed ? (
+              <p role="status" className="mt-4 flex items-center gap-2 border-b border-sand/30 py-3 text-lg font-light">
+                <Check className="h-5 w-5" strokeWidth={1.5} />
+                You&apos;re in — thank you.
+              </p>
+            ) : (
+              <div className="mt-4 flex items-center border-b border-sand/30 transition-colors focus-within:border-sand">
+                <input
+                  id="footer-email"
+                  type="email"
+                  required
+                  autoComplete="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="you@company.com"
+                  className="min-w-0 flex-1 border-0 bg-transparent px-0 py-3 text-lg font-light text-sand-50 placeholder:text-sand/35 focus:outline-none focus:ring-0"
+                />
+                <button type="submit" aria-label="Subscribe" className="group flex h-11 w-11 items-center justify-center">
+                  <ArrowRight className="arrow-nudge h-5 w-5" strokeWidth={1.25} />
+                </button>
+              </div>
+            )}
+          </form>
+        </div>
 
-          {/* Services */}
-          <nav aria-label="Services" className="lg:col-span-2">
-            <p className="text-xs font-semibold uppercase tracking-tracked text-white/40">Services</p>
-            <ul className="mt-5 space-y-1">
-              {SERVICES.map((s) => (
-                <li key={s.id}>
-                  <FooterLink href={`/services/${s.slug}`}>{s.name}</FooterLink>
-                </li>
-              ))}
-            </ul>
-          </nav>
-
-          {/* Company */}
-          <nav aria-label="Company" className="lg:col-span-2">
-            <p className="text-xs font-semibold uppercase tracking-tracked text-white/40">Company</p>
-            <ul className="mt-5 space-y-1">
-              {COMPANY.map((l) => (
-                <li key={l.href}>
-                  <FooterLink href={l.href}>{l.label}</FooterLink>
-                </li>
-              ))}
-            </ul>
-          </nav>
-
-          {/* Talk to us */}
+        {/* Columns */}
+        <div className="grid gap-10 py-14 sm:grid-cols-2 lg:grid-cols-12">
+          <div className="lg:col-span-4">
+            <p className="label text-sand/45">Studio</p>
+            <p className="mt-5 max-w-xs text-[15px] leading-relaxed text-sand/65">{BRAND.longDescription}</p>
+          </div>
+          <FooterCol title="Services" className="lg:col-span-3">
+            {SERVICES.map((s) => (
+              <FooterLink key={s.id} href={`/services/${s.slug}`}>
+                {s.name}
+              </FooterLink>
+            ))}
+          </FooterCol>
+          <FooterCol title="Explore" className="lg:col-span-2">
+            {STUDIO.map((l) => (
+              <FooterLink key={l.href} href={l.href}>
+                {l.label}
+              </FooterLink>
+            ))}
+          </FooterCol>
           <div className="lg:col-span-3">
-            <p className="text-xs font-semibold uppercase tracking-tracked text-white/40">Talk to us</p>
-            <ul className="mt-5 space-y-1 text-sm">
+            <p className="label text-sand/45">Contact</p>
+            <ul className="mt-5 space-y-2 text-[15px]">
               <li>
-                <a href={getWhatsAppUrl()} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-9 items-center gap-2.5 text-white/65 transition-colors hover:text-white">
-                  <MessageCircle className="h-4 w-4 text-[#25D366]" strokeWidth={1.75} />
+                <a href={getWhatsAppUrl()} target="_blank" rel="noopener noreferrer" className="link-u pb-0.5 text-sand/75 hover:text-sand-50">
                   WhatsApp
                 </a>
               </li>
               <li>
-                <a href={`tel:${CONTACT.phoneHref}`} className="inline-flex min-h-9 items-center gap-2.5 text-white/65 transition-colors hover:text-white">
-                  <Phone className="h-4 w-4 text-magenta-300" strokeWidth={1.75} />
+                <a href={`tel:${CONTACT.phoneHref}`} className="link-u pb-0.5 text-sand/75 hover:text-sand-50">
                   {CONTACT.phone}
                 </a>
               </li>
-              <li>
-                <a href={`mailto:${CONTACT.email}`} className="inline-flex min-h-9 max-w-full items-center gap-2.5 text-white/65 transition-colors hover:text-white">
-                  <Mail className="h-4 w-4 shrink-0 text-cyan-300" strokeWidth={1.75} />
-                  <span className="truncate">{CONTACT.email}</span>
+              <li className="truncate">
+                <a href={`mailto:${CONTACT.email}`} className="link-u pb-0.5 text-sand/75 hover:text-sand-50">
+                  {CONTACT.email}
                 </a>
               </li>
             </ul>
-            <p className="mt-5 text-sm leading-relaxed text-white/45">
+            <p className="mt-5 text-sm leading-relaxed text-sand/50">
               {CONTACT.address.line1}
               <br />
               {CONTACT.address.line2}
@@ -135,43 +121,43 @@ export function FooterCMYK() {
           </div>
         </div>
 
-        {/* Oversized wordmark with a passing band of light */}
-        <p
-          aria-hidden="true"
-          className="text-shimmer pointer-events-none mt-20 select-none text-center font-display text-[length:clamp(4.5rem,19vw,16rem)] font-semibold leading-[0.8] tracking-[-0.06em] opacity-[0.14]"
-        >
-          {BRAND.name}
-        </p>
-
         {/* Legal */}
-        <div className="mt-10 flex flex-col gap-4 border-t border-white/[0.07] pt-6 text-xs text-white/40 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-4 border-t border-sand/15 py-7 text-xs text-sand/45 sm:flex-row sm:items-center sm:justify-between">
           <p>
             © {year} {BRAND.legalName}. All rights reserved.
           </p>
-          <div className="flex items-center gap-5">
+          <div className="flex items-center gap-6">
             {CONTACT.certifications[0] && <span>{CONTACT.certifications[0]}</span>}
-            <Link href="/privacy" className="transition-colors hover:text-white">
+            <Link href="/privacy" className="link-u pb-0.5 hover:text-sand-50">
               Privacy
             </Link>
-            <Link href="/terms" className="transition-colors hover:text-white">
+            <Link href="/terms" className="link-u pb-0.5 hover:text-sand-50">
               Terms
             </Link>
+            <Logo variant="monogram" className="h-7 w-7 text-sand/60" />
           </div>
         </div>
-      </Container>
+      </div>
     </footer>
+  );
+}
+
+function FooterCol({ title, className, children }: { title: string; className?: string; children: React.ReactNode }) {
+  return (
+    <nav aria-label={title} className={className}>
+      <p className="label text-sand/45">{title}</p>
+      <ul className="mt-5 space-y-2">{children}</ul>
+    </nav>
   );
 }
 
 function FooterLink({ href, children }: { href: string; children: React.ReactNode }) {
   return (
-    <Link href={href} className="group inline-flex min-h-9 items-center gap-1 text-sm text-white/65 transition-colors hover:text-white">
-      {children}
-      <ArrowUpRight
-        className="h-3.5 w-3.5 -translate-x-1 opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100"
-        strokeWidth={2}
-      />
-    </Link>
+    <li>
+      <Link href={href} className="link-u pb-0.5 text-[15px] text-sand/75 transition-colors hover:text-sand-50">
+        {children}
+      </Link>
+    </li>
   );
 }
 
@@ -182,9 +168,9 @@ function SocialLink({ href, icon: Icon, label }: { href: string; icon: typeof Fa
       target="_blank"
       rel="noopener noreferrer"
       aria-label={label}
-      className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-white/70 transition-all duration-300 hover:-translate-y-0.5 hover:border-white/25 hover:text-white"
+      className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-sand/20 text-sand/75 transition-colors duration-300 hover:border-sand hover:bg-sand hover:text-coal"
     >
-      <Icon className="h-4 w-4" strokeWidth={1.75} />
+      <Icon className="h-4 w-4" strokeWidth={1.25} />
     </a>
   );
 }

@@ -1,22 +1,15 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter, Instrument_Serif } from 'next/font/google';
+import { Jost } from 'next/font/google';
 import { BRAND, SEO, getBrandName, getBrandTagline, getSiteUrl } from '@inkora/brand';
 import './globals.css';
 
 // ─── Fonts (self-hosted via next/font) ──────────────────────────
-const inter = Inter({
+// Jost — geometric, airy; matches the thin "inkelse" wordmark on the brand board.
+const jost = Jost({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-inter',
-});
-
-// Editorial italic accent face (used sparingly for emphasis words)
-const serif = Instrument_Serif({
-  subsets: ['latin'],
-  display: 'swap',
-  weight: '400',
-  style: ['normal', 'italic'],
-  variable: '--font-serif',
+  weight: ['300', '400', '500', '600'],
+  variable: '--font-sans',
 });
 
 // ─── Metadata ───────────────────────────────────────────────────
@@ -81,7 +74,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#07070A',
+  themeColor: '#E6E1DA',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
@@ -94,12 +87,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${inter.variable} ${serif.variable} bg-night`}>
-      <body className="min-h-screen bg-night text-paper antialiased">
+    <html lang="en" className={`${jost.variable} bg-sand`}>
+      <body className="min-h-screen bg-sand text-coal antialiased">
         {/* Skip-to-content link for accessibility */}
         <a
           href="#main"
-          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:bg-ink focus:text-paper focus:px-4 focus:py-2 focus:rounded"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:bg-coal focus:text-sand focus:px-4 focus:py-2 focus:rounded"
         >
           Skip to content
         </a>
