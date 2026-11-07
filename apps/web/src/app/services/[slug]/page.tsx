@@ -1,17 +1,30 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
-import { ArrowLeft, ArrowRight, Check, MessageCircle } from 'lucide-react';
-import { SERVICES, BRAND, getWhatsAppUrl } from '@inkora/brand';
+import { ArrowRight, Check } from 'lucide-react';
+import { SERVICES, BRAND } from '@inkora/brand';
 import { Header } from '@/components/layout/Header';
 import { FooterCMYK } from '@/components/layout/FooterCMYK';
 import { WhatsAppBubble } from '@/components/chat/WhatsAppBubble';
 import { Container } from '@/components/layout/Container';
+import { PageHero } from '@/components/layout/PageHero';
 import { ServiceIcon } from '@/components/brand/ServiceIcon';
+import { CtaBand } from '@/components/marketing/CtaBand';
+import { BusinessCards, GiftBox, Letterhead, PackBox, Standee, Tote } from '@/components/marketing/Artifacts';
+import { lit } from '@/lib/lit';
 
 interface PageProps {
   params: Promise<{ slug: string }>;
 }
+
+const ART: Record<string, (p: { className?: string }) => React.ReactElement> = {
+  printing: BusinessCards,
+  'corporate-gifting': GiftBox,
+  signage: Standee,
+  packaging: PackBox,
+  'graphic-design': Letterhead,
+  'event-branding': Tote,
+};
 
 export function generateStaticParams() {
   return SERVICES.map((s) => ({ slug: s.slug }));
@@ -31,81 +44,84 @@ export default async function ServicePage({ params }: PageProps) {
 
   const idx = SERVICES.findIndex((s) => s.slug === slug);
   const next = SERVICES[(idx + 1) % SERVICES.length];
+  const c = lit(service.accent);
+  const Art = ART[service.slug] ?? BusinessCards;
 
   return (
     <>
       <Header />
-      <main id="main" className="bg-paper">
-        {/* Hero */}
-        <div
-          className="relative flex min-h-[50vh] items-end overflow-hidden pt-24"
-          style={{ background: `linear-gradient(135deg, ${service.accent}, ${service.accent}99 40%, #1A1A1A)` }}
-        >
-          <div className="absolute inset-0 bg-halftone opacity-20" />
-          <Container className="relative z-10 pb-16">
-            <Link href="/services" className="mb-6 inline-flex items-center gap-2 text-sm text-white/80 hover:text-white">
-              <ArrowLeft className="h-4 w-4" strokeWidth={2} />
-              All services
-            </Link>
-            <span className="glass-dark flex h-20 w-20 items-center justify-center rounded-3xl text-white">
-              <ServiceIcon name={service.icon} className="h-9 w-9" />
+      <main id="main" className="bg-night">
+        <PageHero
+          back={{ href: '/services', label: 'All services' }}
+          eyebrow="Service"
+          title={service.name}
+          lead={service.description}
+          tint={c}
+          icon={
+            <span
+              className="flex h-16 w-16 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04]"
+              style={{ color: c, boxShadow: `0 0 40px -6px ${c}` }}
+            >
+              <ServiceIcon name={service.icon} className="h-7 w-7" />
             </span>
-            <h1 className="mt-4 font-display text-display-xl uppercase tracking-tightest text-white">{service.name}</h1>
-            <p className="mt-4 max-w-2xl text-lg text-white/90">{service.description}</p>
-          </Container>
-        </div>
+          }
+        />
 
-        {/* Body */}
-        <Container variant="editorial" className="py-20">
-          <p className="text-lg leading-relaxed text-ink/80">{service.intro}</p>
+        <Container className="py-20 md:py-28">
+          <div className="grid items-center gap-12 lg:grid-cols-12 lg:gap-16">
+            <div className="lg:col-span-7">
+              <p className="eyebrow">Overview</p>
+              <p className="mt-5 text-2xl font-medium leading-relaxed tracking-tight text-white/85 md:text-[1.75rem]">
+                {service.intro}
+              </p>
+            </div>
+            <div className="relative flex items-center justify-center lg:col-span-5">
+              <div aria-hidden="true" className="absolute h-64 w-64 rounded-full blur-[90px]" style={{ backgroundColor: `${c}40` }} />
+              <div className="relative w-full max-w-xs drop-shadow-[0_40px_50px_rgba(0,0,0,0.7)]">
+                <Art className="h-auto w-full" />
+              </div>
+            </div>
+          </div>
 
-          <div className="mt-12">
-            <p className="eyebrow mb-5" style={{ color: service.accent }}>What we offer</p>
-            <div className="grid gap-3 sm:grid-cols-2">
+          <div className="mt-20">
+            <p className="eyebrow">What we offer</p>
+            <ul className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {service.offerings.map((o) => (
-                <div key={o} className="flex items-center gap-3 rounded-xl border border-edge p-4">
-                  <span className="flex h-7 w-7 items-center justify-center rounded-full text-white" style={{ backgroundColor: service.accent }}>
+                <li
+                  key={o}
+                  className="flex items-center gap-3 rounded-2xl border border-white/[0.07] bg-night-800 p-5 transition-colors duration-300 hover:border-white/15"
+                >
+                  <span
+                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full"
+                    style={{ color: c, backgroundColor: `${c}1A` }}
+                  >
                     <Check className="h-4 w-4" strokeWidth={2.5} />
                   </span>
-                  <span className="text-sm font-medium text-ink">{o}</span>
-                </div>
+                  <span className="text-[15px] font-medium text-white/85">{o}</span>
+                </li>
               ))}
-            </div>
+            </ul>
           </div>
         </Container>
 
-        {/* CTA */}
-        <div className="bg-ink py-16 text-center text-paper">
-          <Container variant="editorial">
-            <h2 className="font-display text-display-md uppercase tracking-tightest">
-              Need <span style={{ color: service.accent }}>{service.name.toLowerCase()}</span>?
-            </h2>
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
-              <Link href="/#contact" className="btn-pill-cyan group">
-                Get a quote
-                <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" strokeWidth={2} />
-              </Link>
-              <a
-                href={getWhatsAppUrl(`Hi ${BRAND.nameDisplay}! I'm interested in your ${service.name} service.`)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-pill bg-[#25D366] px-6 py-3 text-sm font-semibold text-white hover:bg-[#1EBE57]"
-              >
-                <MessageCircle className="h-4 w-4" strokeWidth={1.75} />
-                WhatsApp us
-              </a>
-            </div>
-          </Container>
-        </div>
+        <CtaBand
+          title={`Need ${service.name.toLowerCase()}?`}
+          accent="Let’s talk."
+          whatsappMessage={`Hi ${BRAND.nameDisplay}! I'm interested in your ${service.name} service.`}
+        />
 
-        {/* Next service */}
-        <Container className="py-16">
-          <Link href={`/services/${next.slug}`} className="group flex items-center justify-between rounded-2xl border border-edge p-8 transition-colors hover:border-ink">
+        <Container className="pb-24">
+          <Link
+            href={`/services/${next.slug}`}
+            className="group flex items-center justify-between gap-6 rounded-[1.75rem] border border-white/[0.07] bg-night-800 p-8 transition-colors duration-300 hover:border-white/20 md:p-10"
+          >
             <div>
-              <p className="text-xs uppercase tracking-tracked text-quiet">Next service</p>
-              <p className="mt-1 font-display text-2xl font-bold uppercase tracking-tightest text-ink">{next.name}</p>
+              <p className="text-xs font-semibold uppercase tracking-tracked text-white/40">Next service</p>
+              <p className="mt-2 text-2xl font-semibold tracking-tight text-white md:text-3xl">{next.name}</p>
             </div>
-            <ArrowRight className="h-6 w-6 text-ink transition-transform duration-200 group-hover:translate-x-1" strokeWidth={2} />
+            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white text-night transition-transform duration-300 group-hover:translate-x-1">
+              <ArrowRight className="h-5 w-5" strokeWidth={2.25} />
+            </span>
           </Link>
         </Container>
       </main>

@@ -81,6 +81,17 @@ const config: Config = {
           950: '#0A0A0A',
         },
 
+        // Night surfaces — the dark "studio" the site lives in
+        night: {
+          DEFAULT: '#07070A',
+          900: '#07070A',
+          850: '#0B0B10',
+          800: '#101016',
+          700: '#16161E',
+          600: '#1E1E28',
+          500: '#2A2A36',
+        },
+
         // Paper surfaces
         paper: {
           DEFAULT: '#FFFFFF',
@@ -99,7 +110,7 @@ const config: Config = {
       fontFamily: {
         sans: ['var(--font-inter)', 'system-ui', '-apple-system', 'sans-serif'],
         display: ['var(--font-inter)', 'Helvetica Neue', 'system-ui', 'sans-serif'],
-        serif: ['var(--font-fraunces)', 'Georgia', 'serif'],
+        serif: ['var(--font-serif)', 'Georgia', 'serif'],
         mono: ['ui-monospace', 'monospace'],
       },
 

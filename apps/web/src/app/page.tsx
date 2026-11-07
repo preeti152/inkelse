@@ -12,16 +12,16 @@ import { TestimonialsSection } from '@/components/marketing/TestimonialsSection'
 import { ContactSection } from '@/components/marketing/ContactSection';
 
 /**
- * Home — Inkelse immersive scroll-narrative homepage.
+ * Home — Inkelse "Ink Night" homepage.
  *
- * 1. Hero            — Everything Your Brand Needs. Designed. Printed. Delivered.
- * 2. Industries      — "We work with" (Hotels, Restaurants, Healthcare, …)
- * 3. Services        — 6 cards (Printing, Gifting, Signage, Packaging, Design, Events)
- * 4. FeaturedProjects— 5 case-study cards → /projects/[slug]
- * 5. WhyInkelse      — 6 reasons
- * 6. HowWeWork       — Inquiry → Quote → Design Approval → Production → Delivery
- * 7. Testimonials    — genuine feedback only (placeholder until provided)
- * 8. Contact         — quote form + WhatsApp + email + phone + map
+ * 1. Hero             — lamp-lit headline + tilting showcase of printed artifacts
+ * 2. Industries       — "built for" dual marquee
+ * 3. Services         — interactive tab showcase (6 disciplines)
+ * 4. FeaturedProjects — pinned horizontal case-study gallery
+ * 5. WhyInkelse       — bento of reasons, each with a living micro-visual
+ * 6. HowWeWork        — scroll-lit vertical process rail (#process)
+ * 7. Testimonials     — genuine feedback only (honest placeholder until provided)
+ * 8. Contact          — lamp-lit closing CTA + quote form (#contact)
  */
 export default function HomePage() {
   return (
@@ -29,7 +29,7 @@ export default function HomePage() {
       <ScrollNarrative />
       <Header />
 
-      <main id="main">
+      <main id="main" className="bg-night">
         <HeroInkelse />
         <Industries />
         <Services />

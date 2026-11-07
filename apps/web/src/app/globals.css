@@ -2,31 +2,45 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ─────────────────────────────────────────────────────────────
- * Design tokens — single source of truth for runtime CSS values.
- * Mirrors the @inkora/brand exports + Tailwind config.
- * ───────────────────────────────────────────────────────────── */
+/* ═════════════════════════════════════════════════════════════════
+ * Inkelse — "Ink Night" design system
+ *
+ * The site lives in a dark studio. CMYK ink is treated as LIGHT:
+ * lamps, glows and beams in cyan / magenta / yellow illuminate
+ * near-black surfaces, frosted glass and crisp white type.
+ * ═════════════════════════════════════════════════════════════════ */
 
 @layer base {
   :root {
+    color-scheme: dark;
+
     /* CMYK ink palette (the brand) */
     --c-cyan:    #0AAEEC;
     --c-magenta: #E91E63;
     --c-yellow:  #FFD600;
     --c-black:   #1A1A1A;
 
-    /* Paper surfaces */
+    /* Night surfaces */
+    --c-night:     #07070A;
+    --c-night-850: #0B0B10;
+    --c-night-800: #101016;
+    --c-night-700: #16161E;
+
+    /* Paper surfaces (light accents, inner-page bodies) */
     --c-paper:   #FFFFFF;
     --c-cream:   #F7F4EE;
     --c-grey:    #F0F0F0;
 
-    /* Type */
-    --font-inter:    'Inter', system-ui, -apple-system, sans-serif;
-    --font-fraunces: 'Fraunces', Georgia, serif;
+    /* Light-safe gradient stops (brighter tints read better on black) */
+    --g-cyan:    #38C8F5;
+    --g-violet:  #8B7CF6;
+    --g-magenta: #F0458A;
+    --g-amber:   #FFC53D;
 
     /* Motion */
     --ease-standard:    cubic-bezier(0.4, 0, 0.2, 1);
     --ease-emphasized:  cubic-bezier(0.2, 0, 0, 1);
+    --ease-out-expo:    cubic-bezier(0.16, 1, 0.3, 1);
     --ease-bounce:      cubic-bezier(0.34, 1.56, 0.64, 1);
     --duration-fast:    150ms;
     --duration-base:    300ms;
@@ -38,30 +52,32 @@
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
     scroll-behavior: smooth;
-    /* Ensure scroll-snap works only if we opt into it per section */
+    background-color: var(--c-night);
   }
 
   body {
-    background-color: var(--c-paper);
-    color: var(--c-black);
-    font-family: var(--font-inter);
+    background-color: var(--c-night);
+    color: #F5F5F7;
+    font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
     font-feature-settings: 'cv11', 'ss01', 'ss03', 'cv02';
     overflow-x: hidden;
   }
 
   :focus-visible {
-    outline: 2px solid var(--c-cyan);
+    outline: 2px solid var(--g-cyan);
     outline-offset: 3px;
-    border-radius: 2px;
+    border-radius: 4px;
   }
 
   ::selection {
-    background-color: var(--c-cyan);
-    color: var(--c-paper);
+    background-color: var(--c-magenta);
+    color: #fff;
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .aurora-blob, .text-gradient-cmyk, .marquee-track { animation: none !important; }
+    .aurora-blob, .text-gradient-cmyk, .marquee-track, .border-beam::before, .text-shimmer, .lamp-pulse {
+      animation: none !important;
+    }
     *, *::before, *::after {
       animation-duration: 0.01ms !important;
       animation-iteration-count: 1 !important;
@@ -71,73 +87,90 @@
   }
 }
 
-/* ─────────────────────────────────────────────────────────────
- * Reusable component classes (brochure-style)
- * ───────────────────────────────────────────────────────────── */
+/* ═════════════════════════════════════════════════════════════════
+ * Components
+ * ═════════════════════════════════════════════════════════════════ */
 
 @layer components {
   /* Tracked uppercase eyebrow */
   .eyebrow {
-    @apply text-xs uppercase tracking-tracked-wide text-quiet font-semibold;
+    @apply text-xs font-semibold uppercase tracking-tracked-wide text-white/50;
   }
 
-  /* Editorial container */
-  .container-editorial {
-    @apply mx-auto max-w-editorial px-6 md:px-8;
-  }
-
-  /* Premium pill button (matches brochure "REQUEST A QUOTE" + "LETS CONNECT") */
+  /* ── Buttons ─────────────────────────────────────────────── */
   .btn-pill {
-    @apply inline-flex items-center justify-center gap-2.5 rounded-pill px-6 py-3 text-sm font-medium
-           transition-all duration-200 ease-standard
-           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan focus-visible:ring-offset-2
+    @apply relative inline-flex min-h-11 items-center justify-center gap-2.5 overflow-hidden rounded-pill px-6 py-3 text-sm font-semibold
+           transition-all duration-300 ease-standard
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-night
            disabled:pointer-events-none disabled:opacity-50;
   }
-  .btn-pill::after {
-    content: '';
-    @apply ml-1 inline-block h-1.5 w-1.5 rounded-full bg-current opacity-80;
+
+  /* Primary on dark: luminous white pill with a CMYK halo on hover */
+  .btn-light {
+    @apply btn-pill bg-white text-night;
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.6) inset,
+      0 10px 30px -10px rgba(255, 255, 255, 0.35);
+  }
+  .btn-light:hover {
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.8) inset,
+      -10px 0 40px -6px rgba(56, 200, 245, 0.55),
+      10px 0 40px -6px rgba(240, 69, 138, 0.55);
+    transform: translateY(-1px);
   }
 
-  .btn-pill-dark { @apply btn-pill bg-ink text-paper hover:bg-ink-800; }
-  .btn-pill-cyan { @apply btn-pill bg-cyan text-paper hover:bg-cyan-600; }
-  .btn-pill-ghost { @apply btn-pill bg-transparent text-ink ring-1 ring-ink/20 hover:bg-ink hover:text-paper hover:ring-ink; }
-
-  /* Big square category card (like the brochure 3×3 grid) */
-  .product-card {
-    @apply relative overflow-hidden rounded-xl bg-paper-grey transition-all duration-300 ease-standard
-           hover:shadow-2xl hover:-translate-y-1;
+  /* Secondary on dark: glass */
+  .btn-pill-glass {
+    @apply btn-pill text-white;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+  }
+  .btn-pill-glass:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.24);
   }
 
-  /* CMYK chip — small color identifier */
-  .cmyk-chip {
-    @apply inline-flex items-center justify-center h-4 w-4 rounded-full;
+  /* CMYK gradient pill (used sparingly) */
+  .btn-pill-gradient {
+    @apply btn-pill text-white;
+    background-image: linear-gradient(110deg, #0892C5 0%, #C2185B 100%);
+    box-shadow: 0 10px 30px -10px rgba(194, 24, 91, 0.55);
+  }
+  .btn-pill-gradient:hover {
+    box-shadow: 0 14px 36px -10px rgba(10, 174, 236, 0.6);
   }
 
-  /* Halftone texture (matches brochure hero background) */
-  .bg-halftone {
-    background-image:
-      radial-gradient(circle at center, rgba(0, 0, 0, 0.06) 1.2px, transparent 1.6px);
-    background-size: 16px 16px;
-    background-position: 0 0;
+  /* Legacy variants kept for inner pages */
+  .btn-pill-dark { @apply btn-pill bg-night-700 text-white ring-1 ring-white/10 hover:bg-night-600; }
+  .btn-pill-cyan { @apply btn-pill bg-cyan text-night hover:bg-cyan-300; }
+  .btn-pill-ghost { @apply btn-pill bg-transparent text-white ring-1 ring-white/20 hover:bg-white hover:text-night; }
+
+  /* Shine sweep — add `btn-shine` + a <span class="shine" /> child */
+  .btn-shine > .shine {
+    position: absolute;
+    inset: 0;
+    transform: translateX(-120%) skewX(-20deg);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+    transition: transform 800ms var(--ease-emphasized);
+    pointer-events: none;
   }
-  .bg-halftone-diagonal {
-    background-image:
-      repeating-linear-gradient(135deg, rgba(0,0,0,0.03) 0 1px, transparent 1px 18px),
-      radial-gradient(circle at center, rgba(0, 0, 0, 0.05) 1.1px, transparent 1.5px);
-    background-size: auto, 18px 18px;
+  .btn-shine:hover > .shine {
+    transform: translateX(120%) skewX(-20deg);
   }
 
-  /* CMYK 4-stripe footer band */
-  .cmyk-bar {
-    background: var(--cmyk-stripe, linear-gradient(90deg,
-      #0AAEEC 0 25%, #E91E63 25% 50%, #FFD600 50% 75%, #1A1A1A 75% 100%
-    ));
+  /* ── Glass surfaces ──────────────────────────────────────── */
+  .glass-dark {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.025));
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    box-shadow:
+      0 1px 0 0 rgba(255, 255, 255, 0.07) inset,
+      0 30px 60px -30px rgba(0, 0, 0, 0.7);
+    -webkit-backdrop-filter: blur(20px) saturate(140%);
+    backdrop-filter: blur(20px) saturate(140%);
   }
-
-  /* ── Glassmorphism ─────────────────────────────────────────
-   * .glass       — frosted light panel (for light or colourful backgrounds)
-   * .glass-dark  — frosted smoked panel (for dark / aurora backgrounds)
-   * Both fall back to a solid-ish fill where backdrop-filter is unsupported. */
   .glass {
     background: rgba(255, 255, 255, 0.62);
     border: 1px solid rgba(255, 255, 255, 0.7);
@@ -147,58 +180,65 @@
     -webkit-backdrop-filter: blur(18px) saturate(160%);
     backdrop-filter: blur(18px) saturate(160%);
   }
-  .glass-dark {
-    background: rgba(255, 255, 255, 0.055);
-    border: 1px solid rgba(255, 255, 255, 0.11);
-    box-shadow:
-      0 1px 0 0 rgba(255, 255, 255, 0.08) inset,
-      0 24px 60px -24px rgba(0, 0, 0, 0.6);
-    -webkit-backdrop-filter: blur(18px) saturate(140%);
-    backdrop-filter: blur(18px) saturate(140%);
-  }
   @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-    .glass { background: rgba(255, 255, 255, 0.94); }
-    .glass-dark { background: rgba(30, 30, 30, 0.92); }
+    .glass-dark { background: rgba(22, 22, 30, 0.96); }
+    .glass { background: rgba(255, 255, 255, 0.96); }
   }
 
-  /* ── Gradients ─────────────────────────────────────────────── */
+  /* Solid "card" surface: subtle top light, hairline border */
+  .surface {
+    background:
+      radial-gradient(120% 80% at 50% -20%, rgba(255, 255, 255, 0.07), transparent 60%),
+      var(--c-night-800);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    box-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.05) inset;
+  }
+
+  /* Eyebrow chip */
+  .chip-glass {
+    @apply inline-flex items-center gap-2 rounded-pill px-3.5 py-1.5 text-xs font-semibold uppercase tracking-tracked;
+  }
+
+  /* ── Gradients & light ───────────────────────────────────── */
   .text-gradient-cmyk {
-    background-image: linear-gradient(100deg, #0AAEEC 0%, #6C7BF2 38%, #E91E63 68%, #FFB300 100%);
+    background-image: linear-gradient(100deg, var(--g-cyan) 0%, var(--g-violet) 35%, var(--g-magenta) 65%, var(--g-amber) 100%);
     background-size: 200% auto;
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
     animation: gradientPan 8s ease-in-out infinite alternate;
   }
-  /* Darker variant that keeps 4.5:1 contrast on white backgrounds */
+  /* Darker gradient for light backgrounds (keeps 4.5:1) */
   .text-gradient-ink {
     background-image: linear-gradient(100deg, #06769E 0%, #C2185B 100%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
   }
+  /* Silver headline fill — white at top fading to soft grey, like lit metal */
+  .text-silver {
+    background-image: linear-gradient(180deg, #FFFFFF 30%, rgba(255, 255, 255, 0.55) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  /* A band of light sweeping across text */
+  .text-shimmer {
+    background-image: linear-gradient(110deg, rgba(255,255,255,0.45) 35%, #fff 50%, rgba(255,255,255,0.45) 65%);
+    background-size: 250% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: shimmer 4.5s linear infinite;
+  }
 
-  /* Dark mesh canvas used behind hero / dark sections */
   .bg-mesh-dark {
-    background-color: #0B0B0F;
+    background-color: var(--c-night);
     background-image:
-      radial-gradient(60% 50% at 10% 10%, rgba(10, 174, 236, 0.22), transparent 60%),
-      radial-gradient(50% 50% at 90% 20%, rgba(233, 30, 99, 0.18), transparent 60%),
-      radial-gradient(60% 50% at 60% 100%, rgba(255, 214, 0, 0.10), transparent 60%);
+      radial-gradient(60% 50% at 10% 10%, rgba(10, 174, 236, 0.16), transparent 60%),
+      radial-gradient(50% 50% at 90% 20%, rgba(233, 30, 99, 0.13), transparent 60%),
+      radial-gradient(60% 50% at 60% 100%, rgba(255, 214, 0, 0.07), transparent 60%);
   }
-  /* Inner-page hero band — static mesh + faint grid (no extra DOM needed) */
-  .page-hero {
-    background-color: #0B0B0F;
-    background-image:
-      radial-gradient(50% 70% at 8% 0%, rgba(10, 174, 236, 0.32), transparent 65%),
-      radial-gradient(45% 70% at 95% 10%, rgba(233, 30, 99, 0.26), transparent 65%),
-      radial-gradient(40% 60% at 60% 120%, rgba(255, 214, 0, 0.14), transparent 70%),
-      linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
-    background-size: auto, auto, auto, 56px 56px, 56px 56px;
-  }
-
-  /* Soft light mesh for light sections */
   .bg-mesh-light {
     background-color: #FAFAF7;
     background-image:
@@ -207,38 +247,81 @@
       radial-gradient(50% 45% at 50% 100%, rgba(255, 214, 0, 0.10), transparent 70%);
   }
 
-  /* Fine grid with a radial fade — gives depth to dark canvases */
-  .bg-grid-fade {
+  /* Inner-page hero band — static mesh + faint grid */
+  .page-hero {
+    background-color: var(--c-night);
     background-image:
-      linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
-    background-size: 56px 56px;
-    -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, #000 30%, transparent 75%);
-    mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, #000 30%, transparent 75%);
+      radial-gradient(40% 60% at 50% -10%, rgba(255, 255, 255, 0.10), transparent 70%),
+      radial-gradient(50% 70% at 8% 0%, rgba(10, 174, 236, 0.22), transparent 65%),
+      radial-gradient(45% 70% at 95% 10%, rgba(233, 30, 99, 0.18), transparent 65%),
+      linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: auto, auto, auto, 56px 56px, 56px 56px;
   }
 
-  /* Film grain — kills gradient banding, adds a printed-paper feel */
+  .bg-grid-fade {
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+    background-size: 64px 64px;
+    -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, #000 20%, transparent 75%);
+    mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, #000 20%, transparent 75%);
+  }
+
   .bg-grain::after {
     content: '';
     position: absolute;
     inset: 0;
     pointer-events: none;
-    opacity: 0.07;
+    opacity: 0.06;
     mix-blend-mode: overlay;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 
-  /* Drifting aurora blobs (place inside a relative, overflow-hidden parent) */
   .aurora-blob {
     position: absolute;
     border-radius: 9999px;
-    filter: blur(80px);
-    opacity: 0.55;
+    filter: blur(90px);
+    opacity: 0.5;
     will-change: transform;
-    animation: auroraDrift 18s ease-in-out infinite alternate;
+    animation: auroraDrift 20s ease-in-out infinite alternate;
   }
 
-  /* Animated gradient border — wrap content; set --radius to match */
+  /* Hairline divider that fades at both ends */
+  .hairline {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.14), transparent);
+  }
+
+  /* ── Border beam: a point of light orbiting a card's border ──
+   * Usage: add `border-beam` to a rounded, relative element. */
+  .border-beam {
+    position: relative;
+    isolation: isolate;
+  }
+  .border-beam::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    padding: 1px;
+    border-radius: inherit;
+    background: conic-gradient(
+      from var(--beam-angle, 0deg),
+      transparent 0deg,
+      transparent 280deg,
+      rgba(56, 200, 245, 0.9) 320deg,
+      rgba(240, 69, 138, 0.9) 345deg,
+      transparent 360deg
+    );
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: beamSpin 6s linear infinite;
+    pointer-events: none;
+  }
+
+  /* Animated gradient border revealed on hover */
   .border-gradient {
     position: relative;
     isolation: isolate;
@@ -247,24 +330,23 @@
     content: '';
     position: absolute;
     inset: 0;
-    z-index: -1;
+    z-index: 0;
     padding: 1px;
     border-radius: inherit;
-    background: linear-gradient(135deg, rgba(10, 174, 236, 0.9), rgba(233, 30, 99, 0.9), rgba(255, 214, 0, 0.9));
-    background-size: 200% 200%;
+    background: linear-gradient(135deg, rgba(56, 200, 245, 0.9), rgba(139, 124, 246, 0.6), rgba(240, 69, 138, 0.9));
     -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
     opacity: 0;
-    transition: opacity 300ms var(--ease-standard);
-    animation: gradientPan 6s linear infinite;
+    transition: opacity 400ms var(--ease-standard);
+    pointer-events: none;
   }
   .border-gradient:hover::before,
   .border-gradient:focus-within::before {
     opacity: 1;
   }
 
-  /* Spotlight — a soft glow that follows the cursor (see SpotlightCard.tsx) */
+  /* Spotlight — soft glow that follows the cursor (see SpotlightCard.tsx) */
   .spotlight {
     position: relative;
     overflow: hidden;
@@ -276,126 +358,87 @@
     pointer-events: none;
     border-radius: inherit;
     background: radial-gradient(
-      420px circle at var(--spot-x, 50%) var(--spot-y, 50%),
-      var(--spot-color, rgba(10, 174, 236, 0.16)),
-      transparent 45%
+      380px circle at var(--spot-x, 50%) var(--spot-y, 0%),
+      var(--spot-color, rgba(56, 200, 245, 0.14)),
+      transparent 50%
     );
     opacity: 0;
-    transition: opacity 300ms var(--ease-standard);
+    transition: opacity 400ms var(--ease-standard);
   }
   .spotlight:hover::after {
     opacity: 1;
   }
 
-  /* Shine sweep on primary buttons */
-  .btn-shine {
-    position: relative;
-    overflow: hidden;
+  /* Legacy brochure helpers still used on inner pages */
+  .bg-halftone {
+    background-image: radial-gradient(circle at center, rgba(0, 0, 0, 0.06) 1.2px, transparent 1.6px);
+    background-size: 16px 16px;
   }
-  .btn-shine > .shine {
-    position: absolute;
-    inset: 0;
-    transform: translateX(-120%) skewX(-20deg);
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.45), transparent);
-    transition: transform 700ms var(--ease-emphasized);
-    pointer-events: none;
-  }
-  .btn-shine:hover > .shine {
-    transform: translateX(120%) skewX(-20deg);
-  }
-
-  /* Gradient primary button (CMYK). Pair with `btn-shine` + a <span class="shine"/> child. */
-  .btn-pill-gradient {
-    @apply btn-pill text-white;
-    background-image: linear-gradient(110deg, #0892C5 0%, #C2185B 100%);
-    box-shadow: 0 10px 30px -10px rgba(194, 24, 91, 0.55);
-  }
-  .btn-pill-gradient:hover {
-    box-shadow: 0 14px 36px -10px rgba(10, 174, 236, 0.6);
-  }
-
-  /* Glass ghost button for dark backgrounds */
-  .btn-pill-glass {
-    @apply btn-pill text-paper;
-    background: rgba(255, 255, 255, 0.07);
-    border: 1px solid rgba(255, 255, 255, 0.16);
-    -webkit-backdrop-filter: blur(14px);
-    backdrop-filter: blur(14px);
-  }
-  .btn-pill-glass:hover {
-    background: rgba(255, 255, 255, 0.16);
-  }
-
-  /* Eyebrow chip — glass pill with a live dot */
-  .chip-glass {
-    @apply inline-flex items-center gap-2 rounded-pill px-3.5 py-1.5 text-xs font-semibold uppercase tracking-tracked;
+  .cmyk-bar {
+    background: linear-gradient(90deg, #0AAEEC 0 25%, #E91E63 25% 50%, #FFD600 50% 75%, #F5F5F7 75% 100%);
   }
 }
 
+/* ═════════════════════════════════════════════════════════════════
+ * Utilities
+ * ═════════════════════════════════════════════════════════════════ */
+
+@layer utilities {
+  .text-balance { text-wrap: balance; }
+  .text-pretty  { text-wrap: pretty; }
+
+  .marquee-track {
+    display: flex;
+    flex-wrap: nowrap;
+    width: max-content;
+    animation: marqueeKeyframes 38s linear infinite;
+  }
+
+  .mask-fade-x {
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+  }
+  .mask-fade-b {
+    -webkit-mask-image: linear-gradient(180deg, #000 60%, transparent);
+    mask-image: linear-gradient(180deg, #000 60%, transparent);
+  }
+
+  .lamp-pulse {
+    animation: lampPulse 5s ease-in-out infinite;
+  }
+}
+
+/* ═════════════════════════════════════════════════════════════════
+ * Keyframes & registered properties
+ * ═════════════════════════════════════════════════════════════════ */
+
+@property --beam-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes beamSpin {
+  to { --beam-angle: 360deg; }
+}
 @keyframes gradientPan {
   0%   { background-position: 0% 50%; }
   100% { background-position: 100% 50%; }
+}
+@keyframes shimmer {
+  0%   { background-position: 120% 0; }
+  100% { background-position: -120% 0; }
 }
 @keyframes auroraDrift {
   0%   { transform: translate3d(0, 0, 0) scale(1); }
   50%  { transform: translate3d(6%, -4%, 0) scale(1.12); }
   100% { transform: translate3d(-5%, 5%, 0) scale(0.95); }
 }
-
-/* ─────────────────────────────────────────────────────────────
- * Utilities — component-local additions
- * ───────────────────────────────────────────────────────────── */
-
-@layer utilities {
-  .text-balance { text-wrap: balance; }
-  .text-pretty  { text-wrap: pretty; }
-
-  /* Stagger children fade-in */
-  .stagger > * {
-    opacity: 0;
-    animation: fadeInUpKeyframes 700ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
-  }
-  .stagger > *:nth-child(1) { animation-delay: 0ms; }
-  .stagger > *:nth-child(2) { animation-delay: 90ms; }
-  .stagger > *:nth-child(3) { animation-delay: 180ms; }
-  .stagger > *:nth-child(4) { animation-delay: 270ms; }
-  .stagger > *:nth-child(5) { animation-delay: 360ms; }
-  .stagger > *:nth-child(6) { animation-delay: 450ms; }
-  .stagger > *:nth-child(7) { animation-delay: 540ms; }
-  .stagger > *:nth-child(8) { animation-delay: 630ms; }
-  .stagger > *:nth-child(9) { animation-delay: 720ms; }
-
-  @keyframes fadeInUpKeyframes {
-    from { opacity: 0; transform: translateY(16px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  /* Marquee track — children must total 200% width */
-  .marquee-track {
-    display: flex;
-    flex-wrap: nowrap;
-    width: max-content;
-    animation: marqueeKeyframes 28s linear infinite;
-  }
-  @keyframes marqueeKeyframes {
-    from { transform: translateX(0); }
-    to   { transform: translateX(-50%); }
-  }
-
-  /* "Drop" cascade between sections — used as wrappers */
-  .section-drop {
-    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 calc(100% - 60px));
-  }
-  .section-drop-up {
-    clip-path: polygon(0 60px, 100% 0, 100% 100%, 0 100%);
-  }
-
-  /* 3D tilt on hover */
-  .tilt-3d {
-    transform-style: preserve-3d;
-    transition: transform 400ms cubic-bezier(0.2, 0, 0, 1);
-  }
-  .tilt-3d:hover {
-    transform: rotateY(-6deg) rotateX(4deg) translateZ(20px);
-  }
+@keyframes marqueeKeyframes {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+@keyframes lampPulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.75; }
 }

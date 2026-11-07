@@ -5,42 +5,40 @@ import { useEffect, useState } from 'react';
 import { Quote, MessageCircle } from 'lucide-react';
 import { TESTIMONIALS, getWhatsAppUrl } from '@inkora/brand';
 import { Container } from '@/components/layout/Container';
+import { Stage } from '@/components/layout/Stage';
 import { Reveal, SectionHeading } from '@/components/motion/Reveal';
-import { SectionDrop } from './SectionDrop';
 
 /**
- * Section 7 — Testimonials
+ * Section 7 — Testimonials.
  * Renders a carousel ONLY when there is genuine client feedback.
- * Until then, shows a tasteful glass placeholder inviting the first review.
+ * Until then, a compact, honest invitation (no fabricated reviews, ever).
  */
 export function TestimonialsSection() {
   const hasTestimonials = TESTIMONIALS.length > 0;
 
   return (
-    <SectionDrop bgKey="testimonials" bg="#F4F1EA" bgFrom="#0B0B0F" tone="dark" surface="mesh-light">
-      <Container variant="editorial" className="py-24 md:py-28">
-        <SectionHeading align="center" eyebrow="Client voices" title="What clients say" />
+    <Stage className="py-24 md:py-28">
+      <Container variant="editorial">
+        <SectionHeading align="center" eyebrow="Client voices" title="What clients" accent="say." />
 
         {hasTestimonials ? (
           <TestimonialCarousel />
         ) : (
-          <Reveal delay={0.1} className="mx-auto mt-12 max-w-xl">
-            <div className="border-gradient glass rounded-[2rem] p-10 text-center">
-              <span className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan to-magenta text-white shadow-lg">
-                <Quote className="h-6 w-6" strokeWidth={1.75} />
-              </span>
-              <p className="text-xl font-semibold tracking-tight text-ink">
+          <Reveal delay={0.1} className="mx-auto mt-12 max-w-2xl">
+            <div className="border-beam relative overflow-hidden rounded-[2rem] border border-white/[0.08] bg-night-800 p-10 text-center">
+              <Quote aria-hidden="true" className="mx-auto h-10 w-10 text-white/15" strokeWidth={1} />
+              <p className="mt-5 font-serif text-2xl italic leading-snug text-white md:text-3xl">
                 Great work speaks — soon our clients will too.
               </p>
-              <p className="mt-3 text-sm leading-relaxed text-ink/65">
-                We&apos;re gathering genuine feedback from the brands we work with. Real testimonials will appear
-                here — no fabricated reviews, ever.
+              <p className="mx-auto mt-4 max-w-md text-[15px] leading-relaxed text-white/55">
+                We&apos;re gathering genuine feedback from the brands we work with. Real testimonials will appear here —
+                no fabricated reviews, ever.
               </p>
               <a
                 href={getWhatsAppUrl('Hi Inkelse! I worked with you and would like to share feedback.')}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-6 inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-ink underline-offset-4 hover:underline"
+                className="btn-pill-glass mt-8"
               >
                 <MessageCircle className="h-4 w-4" strokeWidth={1.75} />
                 Worked with us? Share your feedback
@@ -49,7 +47,7 @@ export function TestimonialsSection() {
           </Reveal>
         )}
       </Container>
-    </SectionDrop>
+    </Stage>
   );
 }
 
@@ -68,13 +66,12 @@ function TestimonialCarousel() {
 
   return (
     <div
-      className="glass relative mt-12 min-h-[260px] rounded-[2rem] p-8 md:p-12"
+      className="relative mt-12 min-h-[260px] rounded-[2rem] border border-white/[0.08] bg-night-800 p-8 md:p-12"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onFocus={() => setPaused(true)}
       onBlur={() => setPaused(false)}
     >
-      <Quote aria-hidden="true" className="absolute left-8 top-8 h-16 w-16 text-cyan/15" strokeWidth={1} />
       <AnimatePresence mode="wait">
         <motion.figure
           key={index}
@@ -82,15 +79,15 @@ function TestimonialCarousel() {
           animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
           exit={{ opacity: 0, y: -12, filter: 'blur(6px)' }}
           transition={{ duration: 0.5 }}
-          className="relative text-center"
+          className="text-center"
           aria-live="polite"
         >
-          <blockquote className="font-serif text-xl italic leading-relaxed text-ink md:text-2xl">
+          <blockquote className="font-serif text-2xl italic leading-relaxed text-white md:text-3xl">
             &ldquo;{current.quote}&rdquo;
           </blockquote>
           <figcaption className="mt-6">
-            <p className="text-sm font-bold text-ink">{current.author}</p>
-            <p className="text-xs text-ink/60">
+            <p className="text-sm font-semibold text-white">{current.author}</p>
+            <p className="text-xs text-white/50">
               {current.role}
               {current.company ? ` · ${current.company}` : ''}
             </p>
@@ -110,7 +107,7 @@ function TestimonialCarousel() {
           >
             <span
               className={`block h-1.5 rounded-full transition-all duration-300 ${
-                i === index ? 'w-8 bg-gradient-to-r from-cyan to-magenta' : 'w-1.5 bg-ink/30 hover:bg-ink/60'
+                i === index ? 'w-8 bg-gradient-to-r from-cyan to-magenta' : 'w-1.5 bg-white/25 hover:bg-white/50'
               }`}
             />
           </button>

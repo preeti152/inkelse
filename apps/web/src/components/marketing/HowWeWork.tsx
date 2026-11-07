@@ -1,96 +1,126 @@
 'use client';
 
 import { useRef } from 'react';
-import { motion, useReducedMotion, useScroll, useSpring } from 'framer-motion';
-import { MessageSquare, FileText, PenTool, Factory, Truck } from 'lucide-react';
+import Link from 'next/link';
+import { motion, useInView, useReducedMotion, useScroll, useSpring, useTransform } from 'framer-motion';
+import { MessageSquare, FileText, PenTool, Factory, Truck, ArrowRight } from 'lucide-react';
 import { PROCESS_STEPS } from '@inkora/brand';
 import { Container } from '@/components/layout/Container';
-import { SectionHeading, StaggerGroup, itemVariants } from '@/components/motion/Reveal';
-import { SectionDrop } from './SectionDrop';
+import { Stage } from '@/components/layout/Stage';
+import { Reveal, SectionHeading } from '@/components/motion/Reveal';
+import { cn } from '@/lib/cn';
 
 const STEP_ICONS = [MessageSquare, FileText, PenTool, Factory, Truck];
-const STEP_COLORS = ['#0AAEEC', '#6C7BF2', '#E91E63', '#FF7A45', '#FFD600'];
+const STEP_COLORS = ['#38C8F5', '#8B7CF6', '#F0458A', '#FF8A5B', '#FFC53D'];
 
 /**
- * Section 6 — How We Work (5-step process).
- * A CMYK progress line draws itself as the section scrolls through the viewport
- * (horizontal on desktop, vertical on mobile). Steps are glass cards.
+ * Section 6 — How we work.
+ * Sticky heading on the left; on the right a vertical rail fills with CMYK
+ * light as you scroll, a glowing "torch" rides its tip, and each step lights
+ * up as the beam reaches it.
  */
 export function HowWeWork() {
-  const ref = useRef<HTMLDivElement>(null);
+  const railRef = useRef<HTMLDivElement>(null);
   const reduce = useReducedMotion();
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start 80%', 'end 60%'] });
-  const progress = useSpring(scrollYProgress, { stiffness: 90, damping: 24, restDelta: 0.001 });
+  const { scrollYProgress } = useScroll({ target: railRef, offset: ['start 65%', 'end 55%'] });
+  const fill = useSpring(scrollYProgress, { stiffness: 100, damping: 26, restDelta: 0.001 });
+  const torchTop = useTransform(fill, (v) => `${Math.min(Math.max(v, 0), 1) * 100}%`);
 
   return (
-    <SectionDrop bgKey="process" bg="#0B0B0F" bgFrom="#FAFAF7" tone="light" surface="mesh-dark">
-      <Container className="py-24 md:py-32">
-        <SectionHeading
-          tone="light"
-          align="center"
-          eyebrow="Simple & transparent"
-          title={
-            <>
-              How we <span className="text-gradient-cmyk">work</span>
-            </>
-          }
-          lead="From first message to doorstep delivery — five clear steps, one point of contact."
-        />
-
-        <div ref={ref} className="relative mt-16 md:mt-20">
-          {/* Track + animated fill — desktop (horizontal) */}
-          <div aria-hidden="true" className="absolute left-[10%] right-[10%] top-8 hidden h-px bg-white/10 lg:block">
-            <motion.div
-              className="h-full origin-left bg-gradient-to-r from-cyan via-magenta to-yellow"
-              style={{ scaleX: reduce ? 1 : progress }}
-            />
-          </div>
-          {/* Track + animated fill — mobile (vertical) */}
-          <div aria-hidden="true" className="absolute bottom-8 left-8 top-8 w-px bg-white/10 lg:hidden">
-            <motion.div
-              className="h-full w-full origin-top bg-gradient-to-b from-cyan via-magenta to-yellow"
-              style={{ scaleY: reduce ? 1 : progress }}
-            />
+    <Stage id="process" glow="amber" grid className="py-24 md:py-36">
+      <Container>
+        <div className="grid gap-16 lg:grid-cols-12 lg:gap-12">
+          <div className="lg:col-span-5">
+            <div className="lg:sticky lg:top-36">
+              <SectionHeading
+                eyebrow="How we work"
+                title="Five steps."
+                accent="Zero guesswork."
+                lead="From first message to doorstep delivery — clear steps, transparent pricing and one person who owns your order end-to-end."
+              />
+              <Reveal delay={0.2}>
+                <Link href="/#contact" className="btn-light group mt-10">
+                  Start with step one
+                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" strokeWidth={2.25} />
+                </Link>
+              </Reveal>
+            </div>
           </div>
 
-          <StaggerGroup className="relative grid gap-6 lg:grid-cols-5 lg:gap-5">
-            {PROCESS_STEPS.map((step, i) => {
-              const Icon = STEP_ICONS[i] ?? MessageSquare;
-              const color = STEP_COLORS[i] ?? '#0AAEEC';
-              return (
-                <motion.div
-                  key={step.step}
-                  variants={itemVariants}
-                  className="group relative flex gap-5 lg:flex-col lg:items-center lg:gap-0 lg:text-center"
-                >
-                  {/* Node */}
-                  <div className="relative z-10 shrink-0 lg:mb-6">
-                    <div
-                      className="absolute inset-0 rounded-full opacity-40 blur-xl transition-opacity duration-500 group-hover:opacity-80"
-                      style={{ backgroundColor: color }}
-                    />
-                    <div className="glass-dark relative flex h-16 w-16 items-center justify-center rounded-full !bg-[#141418]/90">
-                      <Icon className="h-6 w-6" style={{ color }} strokeWidth={1.75} />
-                      <span
-                        className="absolute -right-1 -top-1 flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold text-ink"
-                        style={{ backgroundColor: color }}
-                      >
-                        {step.step}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Card */}
-                  <div className="glass-dark flex-1 rounded-[1.5rem] p-6 transition-all duration-500 ease-emphasized group-hover:-translate-y-1 group-hover:bg-white/[0.08] lg:w-full">
-                    <h3 className="text-lg font-bold text-paper">{step.title}</h3>
-                    <p className="mt-2 text-sm leading-relaxed text-paper/60">{step.description}</p>
-                  </div>
+          <div ref={railRef} className="relative lg:col-span-7">
+            {/* Rail */}
+            <div aria-hidden="true" className="absolute bottom-6 left-[1.75rem] top-6 w-px bg-white/[0.08] md:left-8">
+              <motion.div
+                className="absolute inset-x-0 top-0 h-full origin-top bg-gradient-to-b from-cyan via-magenta to-yellow"
+                style={{ scaleY: reduce ? 1 : fill }}
+              />
+              {!reduce && (
+                <motion.div className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2" style={{ top: torchTop }}>
+                  <span className="block h-3 w-3 rounded-full bg-white shadow-[0_0_20px_6px_rgba(255,255,255,0.6),0_0_60px_14px_rgba(56,200,245,0.45)]" />
                 </motion.div>
-              );
-            })}
-          </StaggerGroup>
+              )}
+            </div>
+
+            <ol className="space-y-5">
+              {PROCESS_STEPS.map((step, i) => (
+                <Step key={step.step} index={i} title={step.title} description={step.description} />
+              ))}
+            </ol>
+          </div>
         </div>
       </Container>
-    </SectionDrop>
+    </Stage>
+  );
+}
+
+function Step({ index, title, description }: { index: number; title: string; description: string }) {
+  const ref = useRef<HTMLLIElement>(null);
+  const reduce = useReducedMotion();
+  // "Lit" once the step's centre crosses the middle band of the viewport.
+  const seen = useInView(ref, { margin: '-45% 0px -45% 0px' });
+  const lit = reduce || seen;
+  const Icon = STEP_ICONS[index] ?? MessageSquare;
+  const color = STEP_COLORS[index] ?? '#38C8F5';
+
+  return (
+    <li ref={ref} className="relative flex gap-5 md:gap-7">
+      {/* Node */}
+      <div className="relative z-10 shrink-0">
+        <div
+          className="absolute inset-0 rounded-2xl blur-xl transition-opacity duration-700"
+          style={{ backgroundColor: color, opacity: lit ? 0.45 : 0 }}
+        />
+        <div
+          className={cn(
+            'relative flex h-14 w-14 items-center justify-center rounded-2xl border transition-all duration-700 md:h-16 md:w-16',
+            lit ? 'border-white/20 bg-night-700' : 'border-white/[0.07] bg-night-850',
+          )}
+        >
+          <Icon
+            className="h-6 w-6 transition-colors duration-700"
+            style={{ color: lit ? color : 'rgba(255,255,255,0.3)' }}
+            strokeWidth={1.75}
+          />
+        </div>
+      </div>
+
+      {/* Card */}
+      <div
+        className={cn(
+          'flex-1 rounded-[1.5rem] border p-6 transition-all duration-700 ease-emphasized md:p-7',
+          lit
+            ? 'translate-x-0 border-white/[0.12] bg-white/[0.04] opacity-100'
+            : 'translate-x-2 border-white/[0.05] bg-transparent opacity-50',
+        )}
+      >
+        <div className="flex items-baseline gap-3">
+          <span className="font-mono text-xs tabular-nums" style={{ color: lit ? color : 'rgba(255,255,255,0.3)' }}>
+            {String(index + 1).padStart(2, '0')}
+          </span>
+          <h3 className="text-xl font-semibold tracking-tight text-white md:text-2xl">{title}</h3>
+        </div>
+        <p className="mt-2 text-[15px] leading-relaxed text-white/60">{description}</p>
+      </div>
+    </li>
   );
 }

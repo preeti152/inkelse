@@ -24,7 +24,7 @@ export default function NotFound() {
               The page you&apos;re looking for doesn&apos;t exist — yet. Let&apos;s get you back to something
               we&apos;ve already made.
             </p>
-            <Link href="/" className="btn-pill-gradient btn-shine mt-8">
+            <Link href="/" className="btn-light btn-shine mt-8">
               <span className="shine" aria-hidden="true" />
               Back to home
             </Link>

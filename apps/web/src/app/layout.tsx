@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter, Fraunces } from 'next/font/google';
-import { BRAND, SEO, COLORS, getBrandName, getBrandTagline, getSiteUrl } from '@inkora/brand';
+import { Inter, Instrument_Serif } from 'next/font/google';
+import { BRAND, SEO, getBrandName, getBrandTagline, getSiteUrl } from '@inkora/brand';
 import './globals.css';
 
 // ─── Fonts (self-hosted via next/font) ──────────────────────────
@@ -10,11 +10,13 @@ const inter = Inter({
   variable: '--font-inter',
 });
 
-const fraunces = Fraunces({
+// Editorial italic accent face (used sparingly for emphasis words)
+const serif = Instrument_Serif({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-fraunces',
-  axes: ['opsz'],
+  weight: '400',
+  style: ['normal', 'italic'],
+  variable: '--font-serif',
 });
 
 // ─── Metadata ───────────────────────────────────────────────────
@@ -79,7 +81,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: COLORS.paperCream,
+  themeColor: '#07070A',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
@@ -92,8 +94,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${inter.variable} ${fraunces.variable}`}>
-      <body className="min-h-screen bg-paper text-ink antialiased texture-paper">
+    <html lang="en" className={`${inter.variable} ${serif.variable} bg-night`}>
+      <body className="min-h-screen bg-night text-paper antialiased">
         {/* Skip-to-content link for accessibility */}
         <a
           href="#main"

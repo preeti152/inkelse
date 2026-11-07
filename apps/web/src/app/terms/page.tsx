@@ -4,6 +4,7 @@ import { Header } from '@/components/layout/Header';
 import { FooterCMYK } from '@/components/layout/FooterCMYK';
 import { WhatsAppBubble } from '@/components/chat/WhatsAppBubble';
 import { Container } from '@/components/layout/Container';
+import { PageHero } from '@/components/layout/PageHero';
 
 export const metadata: Metadata = {
   title: 'Terms of Service',
@@ -16,28 +17,12 @@ export default function TermsPage() {
   return (
     <>
       <Header />
-      <main id="main" className="bg-paper">
-        {/* Hero */}
-        <div className="page-hero relative overflow-hidden pt-36 pb-24 text-paper md:pt-40 md:pb-28">
-          <div className="absolute inset-0 bg-halftone opacity-10" />
-          <div
-            className="absolute inset-0"
-            style={{
-              background:
-                'radial-gradient(ellipse 50% 40% at 20% 20%, rgba(255,214,0,0.22), transparent 60%),' +
-                'radial-gradient(ellipse 40% 40% at 85% 80%, rgba(10,174,236,0.25), transparent 60%)',
-            }}
-          />
-          <Container className="relative z-10">
-            <p className="eyebrow mb-3 text-yellow">Legal</p>
-            <h1 className="font-display text-display-lg uppercase tracking-tightest">Terms of Service</h1>
-            <p className="mt-4 text-sm text-paper/60">Last updated: {LAST_UPDATED}</p>
-          </Container>
-        </div>
+      <main id="main" className="bg-night">
+        <PageHero eyebrow="Legal" title="Terms of Service" lead={`Last updated: ${LAST_UPDATED}`} />
 
         {/* Body */}
-        <Container variant="editorial" className="py-16">
-          <div className="prose-legal space-y-10 text-ink/80">
+        <Container variant="editorial" className="py-20 md:py-24">
+          <div className="prose-legal space-y-12 text-white/65 [&_strong]:text-white">
             <section>
               <p className="text-lg leading-relaxed">
                 These terms govern your use of the {BRAND.nameDisplay} website and the services we provide. By requesting
@@ -93,11 +78,11 @@ export default function TermsPage() {
             <Section title="Contact us">
               <p>
                 Questions about these terms? Reach us at{' '}
-                <a href={`mailto:${CONTACT.email}`} className="text-cyan underline hover:text-magenta">
+                <a href={`mailto:${CONTACT.email}`} className="text-cyan-300 underline underline-offset-4 hover:text-white">
                   {CONTACT.email}
                 </a>{' '}
                 or call{' '}
-                <a href={`tel:${CONTACT.phoneHref}`} className="text-cyan underline hover:text-magenta">
+                <a href={`tel:${CONTACT.phoneHref}`} className="text-cyan-300 underline underline-offset-4 hover:text-white">
                   {CONTACT.phone}
                 </a>
                 .
@@ -115,7 +100,7 @@ export default function TermsPage() {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section>
-      <h2 className="mb-3 font-display text-xl font-bold uppercase tracking-tight text-ink">{title}</h2>
+      <h2 className="mb-4 text-xl font-semibold tracking-tight text-white">{title}</h2>
       <div className="leading-relaxed">{children}</div>
     </section>
   );

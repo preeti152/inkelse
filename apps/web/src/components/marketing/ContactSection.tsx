@@ -2,19 +2,20 @@
 
 import { AnimatePresence, motion } from 'framer-motion';
 import { useState } from 'react';
-import { ArrowRight, Check, Mail, Phone, MapPin, MessageCircle, Loader2, AlertCircle } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, Check, Mail, Phone, MapPin, MessageCircle, Loader2, AlertCircle, Clock } from 'lucide-react';
 import { CONTACT, BRAND, getWhatsAppUrl } from '@inkora/brand';
 import { Container } from '@/components/layout/Container';
-import { Reveal, SectionHeading } from '@/components/motion/Reveal';
+import { Stage } from '@/components/layout/Stage';
+import { Lamp } from '@/components/effects/Lamp';
+import { Reveal, SplitHeadline } from '@/components/motion/Reveal';
 import { SpotlightCard } from '@/components/motion/SpotlightCard';
-import { SectionDrop } from './SectionDrop';
 
 type Status = 'idle' | 'submitting' | 'success' | 'error';
 
 /**
- * Section 8 — Contact
- * Glass quote form + WhatsApp / email / phone tiles + map.
- * `standalone` (used on /contact) drops the overlapping sheet edge and adds header clearance.
+ * Section 8 — Contact. The closing scene: a magenta lamp lights the headline,
+ * then a glass quote form beside direct WhatsApp / email / phone tiles + map.
+ * `standalone` (used on /contact) adds header clearance and an <h1>.
  */
 export function ContactSection({ standalone = false }: { standalone?: boolean }) {
   const [status, setStatus] = useState<Status>('idle');
@@ -54,28 +55,33 @@ export function ContactSection({ standalone = false }: { standalone?: boolean })
   const mapSrc = `https://www.google.com/maps?q=${encodeURIComponent(CONTACT.mapQuery)}&output=embed`;
 
   return (
-    <SectionDrop
-      bgKey="contact"
-      bg="#FAFAF7"
-      bgFrom={standalone ? undefined : '#F4F1EA'}
-      tone="dark"
-      surface="mesh-light"
-    >
-      <Container className={standalone ? 'pb-24 pt-36 md:pb-32 md:pt-44' : 'py-24 md:py-32'} id="contact">
-        <SectionHeading
-          eyebrow="Get in touch"
-          title={
-            <>
-              Let&apos;s get <span className="text-gradient-ink">started.</span>
-            </>
-          }
-          lead="Tell us what you need and we'll send a quick, itemised quote. We reply within a few hours."
-        />
+    <Stage id="contact" glow="split" className={standalone ? 'pb-28 pt-32 md:pt-40' : 'py-28 md:py-40'}>
+      <Lamp color="magenta" width={30} immediate={standalone} className={standalone ? 'top-24 md:top-28' : 'top-0'} />
 
-        <div className="mt-14 grid gap-8 lg:grid-cols-12 lg:gap-10">
-          {/* Left — form */}
+      <Container className="relative">
+        {/* Headline */}
+        <div className="mx-auto max-w-3xl pt-16 text-center md:pt-20">
+          <Reveal>
+            <p className="eyebrow">Get in touch</p>
+          </Reveal>
+          <SplitHeadline
+            as={standalone ? 'h1' : 'h2'}
+            inView={!standalone}
+            text="Let's make something"
+            accent="people keep."
+            className="mt-5 font-display text-[length:clamp(2.5rem,6vw,5rem)] font-semibold leading-[1] tracking-[-0.04em] text-white text-balance"
+          />
+          <Reveal delay={0.2}>
+            <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-white/60">
+              Tell us what you need and we&apos;ll send a clear, itemised quote. We reply within a few hours.
+            </p>
+          </Reveal>
+        </div>
+
+        <div className="mt-16 grid gap-5 lg:grid-cols-12">
+          {/* ── Form ─────────────────────────────────────── */}
           <Reveal className="lg:col-span-7">
-            <div className="border-gradient glass relative h-full rounded-[2rem] p-6 md:p-10">
+            <div className="border-beam relative h-full overflow-hidden rounded-[2rem] border border-white/[0.08] bg-night-800/80 p-6 backdrop-blur-xl md:p-10">
               <AnimatePresence mode="wait" initial={false}>
                 {status === 'success' ? (
                   <motion.div
@@ -83,19 +89,19 @@ export function ContactSection({ standalone = false }: { standalone?: boolean })
                     initial={{ opacity: 0, scale: 0.96 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.4 }}
-                    className="flex min-h-[380px] flex-col items-center justify-center text-center"
+                    className="flex min-h-[400px] flex-col items-center justify-center text-center"
                     role="status"
                   >
                     <motion.span
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
                       transition={{ type: 'spring', stiffness: 260, damping: 16, delay: 0.1 }}
-                      className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-cyan to-magenta shadow-lg"
+                      className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-cyan to-magenta shadow-[0_0_40px_6px_rgba(240,69,138,0.35)]"
                     >
                       <Check className="h-7 w-7 text-white" strokeWidth={2.5} />
                     </motion.span>
-                    <h3 className="text-2xl font-bold text-ink">Thanks — we&apos;ve got it!</h3>
-                    <p className="mt-3 max-w-md text-ink/65">
+                    <h3 className="text-2xl font-semibold text-white">Thanks — we&apos;ve got it!</h3>
+                    <p className="mt-3 max-w-md text-white/60">
                       A member of the {BRAND.nameDisplay} team will get back to you shortly. For anything urgent, tap
                       the WhatsApp button.
                     </p>
@@ -103,19 +109,21 @@ export function ContactSection({ standalone = false }: { standalone?: boolean })
                       href={getWhatsAppUrl()}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="mt-6 inline-flex items-center gap-2 rounded-pill bg-[#25D366] px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#1EBE57]"
+                      className="btn-pill mt-6 bg-[#25D366] text-[#05210F] hover:bg-[#3BE07A]"
                     >
-                      <MessageCircle className="h-4 w-4" strokeWidth={1.75} />
+                      <MessageCircle className="h-4 w-4" strokeWidth={2} />
                       WhatsApp us now
                     </a>
                   </motion.div>
                 ) : (
-                  <motion.form
-                    key="form"
-                    exit={{ opacity: 0, scale: 0.98 }}
-                    onSubmit={handleSubmit}
-                    className="space-y-5"
-                  >
+                  <motion.form key="form" exit={{ opacity: 0, scale: 0.98 }} onSubmit={handleSubmit} className="space-y-5">
+                    <div className="mb-2 flex items-center justify-between">
+                      <p className="text-lg font-semibold tracking-tight text-white">Request a quote</p>
+                      <span className="inline-flex items-center gap-1.5 text-xs text-white/45">
+                        <Clock className="h-3.5 w-3.5" strokeWidth={2} />
+                        Takes under a minute
+                      </span>
+                    </div>
                     <div className="grid gap-5 sm:grid-cols-2">
                       <Field label="Name" name="name" autoComplete="name" required />
                       <Field label="Email" name="email" type="email" autoComplete="email" required />
@@ -125,7 +133,7 @@ export function ContactSection({ standalone = false }: { standalone?: boolean })
                       <Field label="Company" name="company" autoComplete="organization" />
                     </div>
                     <Field
-                      label="Tell us what you need"
+                      label="What do you need?"
                       name="message"
                       as="textarea"
                       rows={5}
@@ -134,22 +142,18 @@ export function ContactSection({ standalone = false }: { standalone?: boolean })
                     />
 
                     {status === 'error' && (
-                      <p role="alert" className="flex items-start gap-2 rounded-xl bg-stamp/10 px-4 py-3 text-sm text-[#B91C1C]">
+                      <p role="alert" className="flex items-start gap-2 rounded-xl border border-[#F87171]/30 bg-[#F87171]/10 px-4 py-3 text-sm text-[#FCA5A5]">
                         <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" strokeWidth={2} />
                         <span>
                           {errorMsg}{' '}
-                          <a href={getWhatsAppUrl()} target="_blank" rel="noopener noreferrer" className="font-semibold underline">
+                          <a href={getWhatsAppUrl()} target="_blank" rel="noopener noreferrer" className="font-semibold text-white underline">
                             Or message us on WhatsApp.
                           </a>
                         </span>
                       </p>
                     )}
 
-                    <button
-                      type="submit"
-                      disabled={status === 'submitting'}
-                      className="btn-pill-gradient btn-shine group w-full !py-3.5 sm:w-auto sm:!px-8"
-                    >
+                    <button type="submit" disabled={status === 'submitting'} className="btn-light btn-shine group w-full !py-3.5 sm:w-auto sm:!px-8">
                       <span className="shine" aria-hidden="true" />
                       {status === 'submitting' ? (
                         <>
@@ -158,8 +162,8 @@ export function ContactSection({ standalone = false }: { standalone?: boolean })
                         </>
                       ) : (
                         <>
-                          Get a quote
-                          <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" strokeWidth={2} />
+                          Send request
+                          <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" strokeWidth={2.25} />
                         </>
                       )}
                     </button>
@@ -169,44 +173,44 @@ export function ContactSection({ standalone = false }: { standalone?: boolean })
             </div>
           </Reveal>
 
-          {/* Right — contact details + map */}
+          {/* ── Direct channels ───────────────────────────── */}
           <Reveal delay={0.12} className="flex flex-col gap-4 lg:col-span-5">
             <a
               href={getWhatsAppUrl()}
               target="_blank"
               rel="noopener noreferrer"
-              className="btn-shine group relative flex items-center gap-4 overflow-hidden rounded-[1.5rem] bg-gradient-to-br from-[#25D366] to-[#128C7E] p-5 text-white shadow-[0_18px_40px_-16px_rgba(18,140,126,0.7)] transition-transform duration-300 hover:-translate-y-0.5"
+              className="btn-shine group relative flex items-center gap-4 overflow-hidden rounded-[1.5rem] border border-[#25D366]/30 bg-gradient-to-br from-[#25D366]/20 to-[#25D366]/5 p-5 text-white transition-all duration-300 hover:-translate-y-0.5 hover:border-[#25D366]/60 hover:shadow-[0_20px_50px_-20px_rgba(37,211,102,0.6)]"
             >
               <span className="shine" aria-hidden="true" />
-              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-white/20 backdrop-blur">
-                <MessageCircle className="h-6 w-6" strokeWidth={1.75} />
+              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[#25D366] text-[#05210F]">
+                <MessageCircle className="h-6 w-6" strokeWidth={2} />
               </span>
               <span className="flex-1">
                 <span className="block font-semibold">Chat on WhatsApp</span>
-                <span className="block text-sm opacity-90">{CONTACT.phone} · fastest response</span>
+                <span className="block text-sm text-white/60">{CONTACT.phone} · fastest response</span>
               </span>
-              <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" strokeWidth={2} />
+              <ArrowUpRight className="h-5 w-5 text-white/60 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" strokeWidth={2} />
             </a>
 
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
-              <ContactTile href={`mailto:${CONTACT.email}`} icon={Mail} label="Email" value={CONTACT.email} color="#0AAEEC" />
-              <ContactTile href={`tel:${CONTACT.phoneHref}`} icon={Phone} label="Phone" value={CONTACT.phone} color="#E91E63" />
+              <ContactTile href={`mailto:${CONTACT.email}`} icon={Mail} label="Email" value={CONTACT.email} color="#38C8F5" />
+              <ContactTile href={`tel:${CONTACT.phoneHref}`} icon={Phone} label="Phone" value={CONTACT.phone} color="#F0458A" />
             </div>
 
-            <SpotlightCard color="rgba(255,214,0,0.22)" className="glass flex items-start gap-3 rounded-[1.5rem] p-5">
-              <MapPin className="relative z-10 mt-0.5 h-5 w-5 shrink-0 text-[#B38F00]" strokeWidth={1.75} />
-              <span className="relative z-10 text-sm text-ink/80">
+            <div className="flex items-start gap-3 rounded-[1.5rem] border border-white/[0.07] bg-night-800 p-5">
+              <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-[#FFC53D]" strokeWidth={1.75} />
+              <span className="text-sm text-white/70">
                 {CONTACT.address.city}, {CONTACT.address.state}, {CONTACT.address.country}
               </span>
-            </SpotlightCard>
+            </div>
 
-            <div className="glass flex-1 overflow-hidden rounded-[1.5rem] p-1.5">
+            <div className="flex-1 overflow-hidden rounded-[1.5rem] border border-white/[0.07] bg-night-800 p-1.5">
               <iframe
                 title={`${BRAND.nameDisplay} location`}
                 src={mapSrc}
                 width="100%"
                 height="100%"
-                className="min-h-[220px] w-full rounded-[1.2rem] grayscale-[35%]"
+                className="min-h-[220px] w-full rounded-[1.2rem] opacity-80 [filter:invert(0.9)_hue-rotate(180deg)_saturate(0.6)]"
                 style={{ border: 0 }}
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
@@ -215,7 +219,7 @@ export function ContactSection({ standalone = false }: { standalone?: boolean })
           </Reveal>
         </div>
       </Container>
-    </SectionDrop>
+    </Stage>
   );
 }
 
@@ -233,17 +237,20 @@ function ContactTile({
   color: string;
 }) {
   return (
-    <SpotlightCard color={`${color}26`} className="glass group rounded-[1.5rem] transition-transform duration-300 hover:-translate-y-0.5">
+    <SpotlightCard
+      color={`${color}22`}
+      className="group rounded-[1.5rem] border border-white/[0.07] bg-night-800 transition-all duration-300 hover:-translate-y-0.5 hover:border-white/15"
+    >
       <a href={href} className="relative z-10 flex items-center gap-3 p-5">
         <span
           className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
-          style={{ backgroundColor: `${color}1F`, color }}
+          style={{ backgroundColor: `${color}1A`, color }}
         >
           <Icon className="h-5 w-5" strokeWidth={1.75} />
         </span>
         <span className="min-w-0">
-          <span className="block text-xs uppercase tracking-tracked text-ink/55">{label}</span>
-          <span className="block truncate text-sm font-medium text-ink">{value}</span>
+          <span className="block text-xs uppercase tracking-tracked text-white/45">{label}</span>
+          <span className="block truncate text-sm font-medium text-white">{value}</span>
         </span>
       </a>
     </SpotlightCard>
@@ -264,12 +271,12 @@ interface FieldProps {
 function Field({ label, name, type = 'text', required, as = 'input', rows = 3, autoComplete, hint }: FieldProps) {
   const id = `f-${name}`;
   const base =
-    'mt-1.5 block w-full rounded-xl border border-ink/10 bg-white/70 px-4 py-3 text-base text-ink shadow-[inset_0_1px_2px_rgba(0,0,0,0.04)] placeholder:text-ink/40 transition-all duration-200 hover:border-ink/20 focus:border-cyan focus:bg-white focus:outline-none focus:ring-4 focus:ring-cyan/15';
+    'mt-2 block w-full rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-base text-white placeholder:text-white/30 transition-all duration-200 hover:border-white/20 focus:border-cyan/70 focus:bg-white/[0.07] focus:outline-none focus:ring-4 focus:ring-cyan/15';
   return (
     <div>
-      <label htmlFor={id} className="text-xs font-semibold uppercase tracking-tracked text-ink/60">
+      <label htmlFor={id} className="text-xs font-semibold uppercase tracking-tracked text-white/55">
         {label}
-        {required && <span className="text-magenta-700"> *</span>}
+        {required && <span className="text-magenta-300"> *</span>}
       </label>
       {as === 'textarea' ? (
         <textarea
@@ -284,7 +291,7 @@ function Field({ label, name, type = 'text', required, as = 'input', rows = 3, a
         <input id={id} type={type} name={name} required={required} autoComplete={autoComplete} className={base} />
       )}
       {hint && (
-        <p id={`${id}-hint`} className="mt-1.5 text-xs text-ink/55">
+        <p id={`${id}-hint`} className="mt-2 text-xs text-white/45">
           {hint}
         </p>
       )}

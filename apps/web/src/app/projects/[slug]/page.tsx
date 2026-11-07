@@ -1,12 +1,15 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
-import { ArrowLeft, ArrowRight, Check, MessageCircle } from 'lucide-react';
-import { PROJECTS, getWhatsAppUrl, BRAND } from '@inkora/brand';
+import { ArrowRight, Check } from 'lucide-react';
+import { PROJECTS, BRAND } from '@inkora/brand';
 import { Header } from '@/components/layout/Header';
 import { FooterCMYK } from '@/components/layout/FooterCMYK';
 import { WhatsAppBubble } from '@/components/chat/WhatsAppBubble';
 import { Container } from '@/components/layout/Container';
+import { PageHero } from '@/components/layout/PageHero';
+import { CtaBand } from '@/components/marketing/CtaBand';
+import { lit } from '@/lib/lit';
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -33,91 +36,80 @@ export default async function ProjectPage({ params }: PageProps) {
 
   const idx = PROJECTS.findIndex((p) => p.slug === slug);
   const next = PROJECTS[(idx + 1) % PROJECTS.length];
+  const c = lit(project.accent);
 
   return (
     <>
       <Header />
-      <main id="main" className="bg-paper">
-        {/* Hero band */}
-        <div
-          className="relative flex min-h-[60vh] items-end overflow-hidden pt-24"
-          style={{ background: `linear-gradient(135deg, ${project.accent}, ${project.accent}99 40%, #1A1A1A)` }}
+      <main id="main" className="bg-night">
+        <PageHero
+          back={{ href: '/projects', label: 'All projects' }}
+          eyebrow={project.industry}
+          title={project.title}
+          lead={project.summary}
+          tint={c}
         >
-          <div className="absolute inset-0 bg-halftone opacity-20" />
-          <Container className="relative z-10 pb-16">
-            <Link href="/projects" className="mb-6 inline-flex items-center gap-2 text-sm text-white/80 hover:text-white">
-              <ArrowLeft className="h-4 w-4" strokeWidth={2} />
-              All projects
-            </Link>
-            <p className="text-xs font-bold uppercase tracking-tracked-wide text-white/80">{project.industry}</p>
-            <h1 className="mt-3 font-display text-display-xl uppercase tracking-tightest text-white text-balance">
-              {project.title}
-            </h1>
-            <p className="mt-4 max-w-2xl text-lg text-white/90">{project.summary}</p>
-            <div className="mt-6 flex flex-wrap gap-2">
-              {project.services.map((s) => (
-                <span key={s} className="rounded-pill bg-white/20 px-3 py-1 text-xs font-medium text-white">{s}</span>
-              ))}
+          <div className="flex flex-wrap justify-center gap-2">
+            {project.services.map((s) => (
+              <span key={s} className="rounded-pill border border-white/10 bg-white/[0.05] px-3 py-1 text-xs font-medium text-white/75">
+                {s}
+              </span>
+            ))}
+          </div>
+        </PageHero>
+
+        <Container className="py-20 md:py-28">
+          <div className="grid gap-14 lg:grid-cols-12 lg:gap-16">
+            {/* Case study narrative */}
+            <div className="space-y-14 lg:col-span-8">
+              <CaseBlock n="01" label="The challenge" body={project.challenge} color={c} />
+              <CaseBlock n="02" label="Our approach" body={project.approach} color={c} />
+              <CaseBlock n="03" label="The outcome" body={project.outcome} color={c} />
             </div>
-          </Container>
-        </div>
 
-        {/* Body */}
-        <Container variant="editorial" className="py-20">
-          <div className="space-y-14">
-            <CaseBlock label="The challenge" body={project.challenge} accent={project.accent} />
-            <CaseBlock label="Our approach" body={project.approach} accent={project.accent} />
-            <CaseBlock label="The outcome" body={project.outcome} accent={project.accent} />
-
-            {/* Deliverables */}
-            <div>
-              <p className="eyebrow mb-5" style={{ color: project.accent }}>What we delivered</p>
-              <div className="grid gap-3 sm:grid-cols-2">
-                {project.deliverables.map((d) => (
-                  <div key={d} className="flex items-center gap-3 rounded-xl border border-edge p-4">
-                    <span className="flex h-7 w-7 items-center justify-center rounded-full text-white" style={{ backgroundColor: project.accent }}>
-                      <Check className="h-4 w-4" strokeWidth={2.5} />
-                    </span>
-                    <span className="text-sm font-medium text-ink">{d}</span>
-                  </div>
-                ))}
+            {/* Sticky fact sheet */}
+            <aside className="lg:col-span-4">
+              <div className="rounded-[1.75rem] border border-white/[0.07] bg-night-800 p-7 lg:sticky lg:top-32">
+                <p className="text-xs font-semibold uppercase tracking-tracked text-white/40">Client</p>
+                <p className="mt-2 text-lg font-semibold text-white">{project.client}</p>
+                <div className="hairline my-6" />
+                <p className="text-xs font-semibold uppercase tracking-tracked text-white/40">What we delivered</p>
+                <ul className="mt-4 space-y-3">
+                  {project.deliverables.map((d) => (
+                    <li key={d} className="flex items-start gap-3 text-[15px] text-white/80">
+                      <span
+                        className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full"
+                        style={{ color: c, backgroundColor: `${c}1A` }}
+                      >
+                        <Check className="h-3 w-3" strokeWidth={3} />
+                      </span>
+                      {d}
+                    </li>
+                  ))}
+                </ul>
               </div>
-            </div>
-
-            {/* Client */}
-            <div className="rounded-2xl bg-paper-grey p-6 text-sm text-quiet">
-              <span className="font-semibold text-ink">Client:</span> {project.client}
-            </div>
+            </aside>
           </div>
         </Container>
 
-        {/* CTA */}
-        <div className="bg-ink py-16 text-center text-paper">
-          <Container variant="editorial">
-            <h2 className="font-display text-display-md uppercase tracking-tightest">
-              Want work like this for <span className="text-cyan">your brand?</span>
-            </h2>
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
-              <Link href="/#contact" className="btn-pill-cyan group">
-                Get a quote
-                <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" strokeWidth={2} />
-              </Link>
-              <a href={getWhatsAppUrl(`Hi ${BRAND.nameDisplay}! I saw the "${project.title}" case study and want something similar.`)} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-pill bg-[#25D366] px-6 py-3 text-sm font-semibold text-white hover:bg-[#1EBE57]">
-                <MessageCircle className="h-4 w-4" strokeWidth={1.75} />
-                WhatsApp us
-              </a>
-            </div>
-          </Container>
-        </div>
+        <CtaBand
+          title="Want work like this"
+          accent="for your brand?"
+          whatsappMessage={`Hi ${BRAND.nameDisplay}! I saw the "${project.title}" case study and want something similar.`}
+        />
 
-        {/* Next project */}
-        <Container className="py-16">
-          <Link href={`/projects/${next.slug}`} className="group flex items-center justify-between rounded-2xl border border-edge p-8 transition-colors hover:border-ink">
+        <Container className="pb-24">
+          <Link
+            href={`/projects/${next.slug}`}
+            className="group flex items-center justify-between gap-6 rounded-[1.75rem] border border-white/[0.07] bg-night-800 p-8 transition-colors duration-300 hover:border-white/20 md:p-10"
+          >
             <div>
-              <p className="text-xs uppercase tracking-tracked text-quiet">Next project</p>
-              <p className="mt-1 font-display text-2xl font-bold uppercase tracking-tightest text-ink">{next.title}</p>
+              <p className="text-xs font-semibold uppercase tracking-tracked text-white/40">Next project</p>
+              <p className="mt-2 text-2xl font-semibold tracking-tight text-white md:text-3xl">{next.title}</p>
             </div>
-            <ArrowRight className="h-6 w-6 text-ink transition-transform duration-200 group-hover:translate-x-1" strokeWidth={2} />
+            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white text-night transition-transform duration-300 group-hover:translate-x-1">
+              <ArrowRight className="h-5 w-5" strokeWidth={2.25} />
+            </span>
           </Link>
         </Container>
       </main>
@@ -127,11 +119,16 @@ export default async function ProjectPage({ params }: PageProps) {
   );
 }
 
-function CaseBlock({ label, body, accent }: { label: string; body: string; accent: string }) {
+function CaseBlock({ n, label, body, color }: { n: string; label: string; body: string; color: string }) {
   return (
-    <div>
-      <p className="eyebrow mb-3" style={{ color: accent }}>{label}</p>
-      <p className="text-lg leading-relaxed text-ink/80">{body}</p>
-    </div>
+    <section>
+      <div className="flex items-center gap-3">
+        <span className="font-mono text-xs tabular-nums" style={{ color }}>
+          {n}
+        </span>
+        <h2 className="text-sm font-semibold uppercase tracking-tracked text-white/50">{label}</h2>
+      </div>
+      <p className="mt-4 text-xl leading-relaxed text-white/80 md:text-2xl md:leading-relaxed">{body}</p>
+    </section>
   );
 }
